@@ -1,0 +1,168 @@
+[gd_scene load_steps=2 format=3 uid="uid://c34hmf2iefu7p"]
+
+[ext_resource type="Script" path="res://Scripts/UI/HUD.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="TutorialPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.92)
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 150.0
+
+[node name="TutorialRoot" type="HBoxContainer" parent="TutorialPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TutorialText" type="Label" parent="TutorialPanel/TutorialRoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Tutoriel"
+autowrap_mode = 3
+
+[node name="TutorialArrow" type="Label" parent="TutorialPanel/TutorialRoot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+text = "➡"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Victory" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VictoryCenter" type="CenterContainer" parent="Victory"]
+layout_mode = 2
+
+[node name="VictoryLabel" type="Label" parent="Victory/VictoryCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "VICTORY!
+30 habitants atteints."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -358.0
+offset_top = 10.0
+offset_right = -8.0
+offset_bottom = 339.0
+grow_horizontal = 0
+
+[node name="Panel" type="PanelContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="Root" type="VBoxContainer" parent="Margin/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Stats" type="VBoxContainer" parent="Margin/Panel/Root"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="WoodLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Wood: 0"
+
+[node name="FoodLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Food: 0"
+
+[node name="GoldLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Gold: 0"
+
+[node name="PopLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Pop: 0 / 0"
+
+[node name="SelectedLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Selected: (none)"
+
+[node name="RatesLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Rates: food +0.0/s, food -0.0/s, gold +0.0/s"
+
+[node name="FoodNetLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Food net: +0.00/s"
+
+[node name="SelectedDetailsLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Details: -"
+autowrap_mode = 3
+
+[node name="Separator" type="HSeparator" parent="Margin/Panel/Root"]
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Margin/Panel/Root"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HouseButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "House"
+
+[node name="FarmButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Farm"
+
+[node name="LumberMillButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lumber Mill"
+
+[node name="StorageButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Storage"
+
+[node name="House2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "House II"
+
+[node name="Farm2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Farm II"
+
+[node name="LumberMill2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lumber Mill II"
+
+[node name="ToastPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.85)
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 360.0
+offset_bottom = 44.0
+
+[node name="ToastLabel" type="Label" parent="ToastPanel"]
+unique_name_in_owner = true
+layout_mode = 2

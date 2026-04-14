@@ -1,0 +1,115 @@
+[gd_resource type="Resource" script_class="GameBalance" load_steps=10 format=3 uid="uid://dk3i03blwhirb"]
+
+[ext_resource type="Script" path="res://Scripts/Data/GameBalance.gd" id="1_balance"]
+[ext_resource type="Script" path="res://Scripts/Data/BuildingTuning.gd" id="2_tuning"]
+
+[sub_resource type="Resource" id="Tuning_house"]
+script = ExtResource("2_tuning")
+id = &"house"
+cost = {
+"gold": 8,
+"wood": 12
+}
+produces_resource = &""
+production_amount = 0
+production_interval_sec = 0.0
+population_capacity = 5
+storage_capacity_bonus = 0
+color = Color(0.415686, 0.662745, 1, 1)
+
+[sub_resource type="Resource" id="Tuning_house_2"]
+script = ExtResource("2_tuning")
+id = &"house_2"
+cost = {
+"gold": 14,
+"wood": 18
+}
+produces_resource = &""
+production_amount = 0
+production_interval_sec = 0.0
+population_capacity = 8
+storage_capacity_bonus = 0
+color = Color(0.36, 0.56, 0.92, 1)
+
+[sub_resource type="Resource" id="Tuning_farm"]
+script = ExtResource("2_tuning")
+id = &"farm"
+cost = {
+"gold": 5,
+"wood": 10
+}
+produces_resource = &"food"
+production_amount = 3
+production_interval_sec = 4.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.980392, 0.823529, 0.364706, 1)
+
+[sub_resource type="Resource" id="Tuning_farm_2"]
+script = ExtResource("2_tuning")
+id = &"farm_2"
+cost = {
+"gold": 8,
+"wood": 14
+}
+produces_resource = &"food"
+production_amount = 5
+production_interval_sec = 4.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.92, 0.75, 0.26, 1)
+
+[sub_resource type="Resource" id="Tuning_sawmill"]
+script = ExtResource("2_tuning")
+id = &"sawmill"
+cost = {
+"gold": 6,
+"wood": 8
+}
+produces_resource = &"wood"
+production_amount = 2
+production_interval_sec = 4.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.717647, 0.560784, 0.392157, 1)
+
+[sub_resource type="Resource" id="Tuning_sawmill_2"]
+script = ExtResource("2_tuning")
+id = &"sawmill_2"
+cost = {
+"gold": 10,
+"wood": 12
+}
+produces_resource = &"wood"
+production_amount = 3
+production_interval_sec = 4.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.64, 0.5, 0.34, 1)
+
+[sub_resource type="Resource" id="Tuning_storage"]
+script = ExtResource("2_tuning")
+id = &"storage"
+cost = {
+"wood": 15
+}
+produces_resource = &""
+production_amount = 0
+production_interval_sec = 0.0
+population_capacity = 0
+storage_capacity_bonus = 100
+color = Color(0.7, 0.7, 0.75, 1)
+
+[resource]
+script = ExtResource("1_balance")
+victory_population = 30
+base_wood_cap = 100
+base_food_cap = 100
+base_gold_cap = 100
+starting_food = 10
+starting_gold = 10
+pop_tick_interval_sec = 1.0
+food_per_person_per_tick = 1
+gold_per_person_per_tick = 1
+starvation_decrease_per_tick = 1
+buildings = Array[ExtResource("2_tuning")]([SubResource("Tuning_house"), SubResource("Tuning_house_2"), SubResource("Tuning_farm"), SubResource("Tuning_farm_2"), SubResource("Tuning_sawmill"), SubResource("Tuning_sawmill_2"), SubResource("Tuning_storage")])
