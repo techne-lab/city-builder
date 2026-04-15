@@ -236,10 +236,10 @@ func _update_tutorial() -> void:
 	# Important: without a House, capacity is 0 => population stays at 0 => no gold income.
 	if houses == 0:
 		step_text = "1) Construis une House d'abord.\nSans House, la population reste à 0 → pas d'or."
-	elif farms == 0:
-		step_text = "2) Construis une Farm pour produire de la nourriture.\nSurveille Food net pour éviter la famine."
 	elif mills == 0:
-		step_text = "3) Construis une Lumber Mill pour produire du wood.\nTu en auras besoin pour étendre la ville."
+		step_text = "2) Construis une Scierie (Sawmill) pour produire du wood.\nTu en auras besoin pour étendre la ville."
+	elif farms == 0:
+		step_text = "3) Construis une Ferme (Farm) pour produire de la nourriture.\nSurveille Food net pour éviter la famine."
 	else:
 		step_text = "4) Équilibre: Farms + Houses + Lumber Mills.\nObjectif: atteindre 30 population."
 

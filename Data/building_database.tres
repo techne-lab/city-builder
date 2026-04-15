@@ -14,6 +14,7 @@ produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 2
+storage_capacity_bonus = 0
 color = Color(0.415686, 0.662745, 1, 1)
 
 [sub_resource type="Resource" id="BuildingData_house_2"]
@@ -27,6 +28,7 @@ produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 2
+storage_capacity_bonus = 0
 color = Color(0.36, 0.56, 0.92, 1)
 
 [sub_resource type="Resource" id="BuildingData_farm"]
@@ -40,6 +42,7 @@ produces_resource = &"food"
 production_amount = 1
 production_interval_sec = 2.0
 population_capacity = 0
+storage_capacity_bonus = 0
 color = Color(0.980392, 0.823529, 0.364706, 1)
 
 [sub_resource type="Resource" id="BuildingData_farm_2"]
@@ -53,6 +56,7 @@ produces_resource = &"food"
 production_amount = 1
 production_interval_sec = 2.0
 population_capacity = 0
+storage_capacity_bonus = 0
 color = Color(0.92, 0.75, 0.26, 1)
 
 [sub_resource type="Resource" id="BuildingData_sawmill"]
@@ -66,6 +70,7 @@ produces_resource = &"wood"
 production_amount = 2
 production_interval_sec = 3.0
 population_capacity = 0
+storage_capacity_bonus = 0
 color = Color(0.717647, 0.560784, 0.392157, 1)
 
 [sub_resource type="Resource" id="BuildingData_sawmill_2"]
@@ -79,6 +84,7 @@ produces_resource = &"wood"
 production_amount = 2
 production_interval_sec = 3.0
 population_capacity = 0
+storage_capacity_bonus = 0
 color = Color(0.64, 0.5, 0.34, 1)
 
 [sub_resource type="Resource" id="BuildingData_storage"]
@@ -92,6 +98,7 @@ produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
+storage_capacity_bonus = 0
 color = Color(0.7, 0.7, 0.75, 1)
 
 [resource]
