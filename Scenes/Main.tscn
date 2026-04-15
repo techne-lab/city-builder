@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c1m4o7p5u2a1s"]
+[gd_scene load_steps=9 format=3 uid="uid://c1m4o7p5u2a1s"]
 
 [ext_resource type="Script" path="res://Scripts/Systems/GridSystem.gd" id="1_6y3g2"]
 [ext_resource type="Script" path="res://Scripts/Systems/BuildingSystem.gd" id="2_1xgsv"]
@@ -7,8 +7,17 @@
 [ext_resource type="Script" path="res://Scripts/GameManager.gd" id="5_gm"]
 [ext_resource type="PackedScene" uid="uid://c34hmf2iefu7p" path="res://Scenes/UI/HUD.tscn" id="6_hud"]
 [ext_resource type="Resource" uid="uid://dk3i03blwhirb" path="res://Data/game_balance.tres" id="7_balance"]
+[ext_resource type="Script" path="res://Scripts/Systems/CameraDragPan.gd" id="8_cam_pan"]
 
 [node name="Main" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="CameraPan" type="Node" parent="."]
+script = ExtResource("8_cam_pan")
+camera_path = NodePath("../Camera2D")
+grid_path = NodePath("../Grid")
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("1_6y3g2")

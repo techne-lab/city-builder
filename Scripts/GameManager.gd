@@ -38,8 +38,11 @@ func _ready() -> void:
 
 func _on_building_placed(_building: Node2D, _cell: Vector2i, _building_id: StringName) -> void:
 	_recalculate_derived_from_buildings()
+	_assign_workers_from_population()
 
 func _on_population_changed(pop: int, _cap: int) -> void:
+	# Don't call _recalculate_derived_from_buildings() here: it sets capacity and would recurse.
+	_assign_workers_from_population(pop)
 	if _victory:
 		return
 	if pop >= _victory_population:
@@ -72,6 +75,47 @@ func _recalculate_derived_from_buildings() -> void:
 		var food_cap: int = int(_base_caps.get(&"food", 100)) + total_storage_bonus
 		var gold_cap: int = int(_base_caps.get(&"gold", 100)) + total_storage_bonus
 		_resource_manager.set_caps({&"wood": wood_cap, &"food": food_cap, &"gold": gold_cap})
+
+	_assign_workers_from_population()
+
+func _assign_workers_from_population(available_workers: int = -1) -> void:
+	if _building_system == null:
+		return
+	if available_workers < 0:
+		available_workers = (_population_manager.population if _population_manager != null else 0)
+	available_workers = maxi(available_workers, 0)
+
+	var producers: Array[BuildingScript] = []
+	for b in _get_placed_buildings():
+		var data := b.building_data as BuildingDataScript
+		if data != null and data.is_producer():
+			producers.append(b)
+		else:
+			# Non-producers don't need workers.
+			b.worker_assigned = true
+
+	# Stable assignment so the same buildings stay active.
+	producers.sort_custom(func(a: BuildingScript, c: BuildingScript) -> bool:
+		var pa := _producer_priority(a)
+		var pc := _producer_priority(c)
+		if pa != pc:
+			return pa < pc
+		return a.get_instance_id() < c.get_instance_id()
+	)
+
+	var active := mini(available_workers, producers.size())
+	for i in range(producers.size()):
+		producers[i].worker_assigned = i < active
+
+func _producer_priority(b: BuildingScript) -> int:
+	# Lower = higher priority. Game design rule: sawmills first, then farms.
+	match b.building_id:
+		&"sawmill", &"sawmill_2":
+			return 0
+		&"farm", &"farm_2":
+			return 1
+		_:
+			return 2
 
 func _get_placed_buildings() -> Array[BuildingScript]:
 	var out: Array[BuildingScript] = []

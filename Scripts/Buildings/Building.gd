@@ -18,6 +18,9 @@ var _production_timer: Timer
 var _resource_manager: Node
 var _place_tween: Tween
 
+# Production buildings require a worker to operate (assigned by GameManager).
+var worker_assigned: bool = true
+
 func set_visual(type_id: int, color: Color) -> void:
 	building_type = type_id
 	fill_color = color
@@ -48,6 +51,9 @@ func _setup_production_from_data(d: Resource) -> void:
 		return
 	if not data.is_producer():
 		return
+	# Producers may be disabled if not enough population is available.
+	# (Assignment is handled externally; default is enabled.)
+	worker_assigned = true
 
 	_production_timer = Timer.new()
 	_production_timer.name = "ProductionTimer"
@@ -67,6 +73,8 @@ func _on_production_timeout() -> void:
 	if data == null:
 		return
 	if not data.is_producer():
+		return
+	if not worker_assigned:
 		return
 	if _resource_manager == null:
 		_resource_manager = get_node_or_null("/root/ResourceManager")

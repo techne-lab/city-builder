@@ -194,6 +194,9 @@ func _update_rates() -> void:
 			var data := b.building_data as BuildingDataScript
 			if data == null:
 				continue
+			# Production buildings require an assigned worker to operate.
+			if data.is_producer() and not b.worker_assigned:
+				continue
 			if data.produces_resource == &"food" and data.production_interval_sec > 0.0:
 				food_prod_per_sec += float(data.production_amount) / float(data.production_interval_sec)
 
