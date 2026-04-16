@@ -1,6 +1,8 @@
 extends Node2D
 class_name GridSystem
 
+const BuildingScript := preload("res://Scripts/Buildings/Building.gd")
+
 ## Grid settings (MVP)
 @export var cell_size: int = 32
 @export var grid_width: int = 40
@@ -128,6 +130,23 @@ func clear() -> void:
 
 func get_occupied_payload(cell: Vector2i) -> Variant:
 	return _occupied.get(cell, null)
+
+func is_cell_blocked(cell: Vector2i) -> bool:
+	return _blocked.has(cell)
+
+func get_cell_properties(cell: Vector2i) -> Dictionary:
+	var props: Dictionary = {}
+	props[&"cell"] = cell
+	props[&"in_bounds"] = is_in_bounds(cell)
+	props[&"blocked"] = is_cell_blocked(cell)
+	var payload: Variant = get_occupied_payload(cell)
+	props[&"occupied"] = payload != null
+	props[&"occupant_name"] = (payload.name if (payload is Node) else "")
+	if payload != null:
+		# Building nodes expose building_id.
+		if payload is BuildingScript:
+			props[&"building_id"] = (payload as BuildingScript).building_id
+	return props
 
 func can_place_1x1_at_world(world_pos: Vector2) -> bool:
 	var cell := world_to_cell(world_pos)

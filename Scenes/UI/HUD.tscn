@@ -112,12 +112,23 @@ layout_mode = 2
 text = "Details: -"
 autowrap_mode = 3
 
+[node name="CellDetailsLabel" type="Label" parent="Margin/Panel/Root/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
 [node name="Separator" type="HSeparator" parent="Margin/Panel/Root"]
 layout_mode = 2
 
 [node name="Buttons" type="VBoxContainer" parent="Margin/Panel/Root"]
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="SelectCellButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Select"
 
 [node name="HouseButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
@@ -132,27 +143,19 @@ text = "Farm"
 [node name="LumberMillButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Lumber Mill"
+text = "Sawmill"
 
 [node name="StorageButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Storage"
 
-[node name="House2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
+[node name="UpgradeButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-text = "House II"
-
-[node name="Farm2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Farm II"
-
-[node name="LumberMill2Button" type="Button" parent="Margin/Panel/Root/Buttons"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Lumber Mill II"
+disabled = true
+text = "Upgrade"
 
 [node name="ToastPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true

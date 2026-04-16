@@ -24,7 +24,7 @@ Projet: `citybuilder` (prototype MVP)
 
 ### UI actuelle
 - Affiche: wood/food/gold, population, bâtiment sélectionné, détails du bâtiment.
-- Boutons: House / Farm / Lumber Mill / Storage.
+- Boutons: House / Farm / Sawmill / Storage.
 - Overlay debug: **food production/s**, **food consumption/s**, **gold income/s**.
 
 ## Points forts (bons choix pour un MVP)

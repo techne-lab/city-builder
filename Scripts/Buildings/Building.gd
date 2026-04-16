@@ -10,6 +10,10 @@ const BuildingDataScript := preload("res://Scripts/Data/BuildingData.gd")
 @export var building_type: int = 0
 @export var fill_color: Color = Color.WHITE
 @export var outline_color: Color = Color(0, 0, 0, 0.35)
+@export var outline_width: float = 2.0
+
+@export var upgraded_outline_color: Color = Color(1.0, 0.9, 0.25, 0.95)
+@export var upgraded_outline_width: float = 3.5
 
 @export var building_id: StringName = &""
 
@@ -19,7 +23,22 @@ var _resource_manager: Node
 var _place_tween: Tween
 
 # Production buildings require a worker to operate (assigned by GameManager).
-var worker_assigned: bool = true
+var _worker_assigned: bool = true
+var worker_assigned: bool:
+	get:
+		return _worker_assigned
+	set(value):
+		if _worker_assigned == value:
+			return
+		_worker_assigned = value
+		queue_redraw()
+
+# Visual indicator for worker assignment (production buildings only)
+@export var show_worker_indicator: bool = true
+@export var worker_indicator_radius_px: float = 5.0
+@export var worker_indicator_margin_px: float = 6.0
+@export var worker_assigned_color: Color = Color(0.25, 1.0, 0.35, 0.95)
+@export var worker_unassigned_color: Color = Color(1.0, 0.25, 0.25, 0.95)
 
 func set_visual(type_id: int, color: Color) -> void:
 	building_type = type_id
@@ -33,9 +52,22 @@ func apply_building_data(id: StringName, data: Resource) -> void:
 	var d := building_data as BuildingDataScript
 	if d != null:
 		set_visual(building_type, d.color)
+		_apply_upgrade_visuals()
 		_setup_production_from_data(d)
 	else:
 		_clear_production()
+		_apply_upgrade_visuals()
+
+func _apply_upgrade_visuals() -> void:
+	# Convention: *_2 are upgraded versions.
+	var upgraded := String(building_id).ends_with("_2")
+	if upgraded:
+		outline_color = upgraded_outline_color
+		outline_width = upgraded_outline_width
+	else:
+		outline_color = Color(0, 0, 0, 0.35)
+		outline_width = 2.0
+	queue_redraw()
 
 func set_cell_and_snap(new_cell: Vector2i, top_left_world: Vector2, new_cell_size: int) -> void:
 	cell = new_cell
@@ -99,5 +131,15 @@ func _draw() -> void:
 	# Simple placeholder: filled rect + outline, anchored top-left.
 	var px_size := Vector2(size_cells.x * cell_size, size_cells.y * cell_size)
 	draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
-	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, 2.0)
+	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, outline_width)
+
+	if not show_worker_indicator:
+		return
+	var d := building_data as BuildingDataScript
+	if d == null or not d.is_producer():
+		return
+
+	var r := worker_indicator_radius_px
+	var pos := Vector2(px_size.x - worker_indicator_margin_px - r, worker_indicator_margin_px + r)
+	draw_circle(pos, r, (worker_assigned_color if worker_assigned else worker_unassigned_color))
 

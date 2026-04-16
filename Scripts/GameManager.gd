@@ -78,6 +78,10 @@ func _recalculate_derived_from_buildings() -> void:
 
 	_assign_workers_from_population()
 
+func on_buildings_changed() -> void:
+	# Public hook for UI-driven changes (ex: upgrades).
+	_recalculate_derived_from_buildings()
+
 func _assign_workers_from_population(available_workers: int = -1) -> void:
 	if _building_system == null:
 		return
