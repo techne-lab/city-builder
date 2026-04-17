@@ -98,8 +98,8 @@ func _recalculate_derived_from_buildings() -> void:
 		var data := b.building_data as BuildingDataScript
 		if data == null:
 			continue
-		total_pop_capacity += maxi(data.population_capacity, 0)
-		total_storage_bonus += maxi(data.storage_capacity_bonus, 0)
+		total_pop_capacity += maxi(data.population_capacity * b.level, 0)
+		total_storage_bonus += maxi(data.storage_capacity_bonus * b.level, 0)
 
 	if _population_manager != null:
 		_population_manager.capacity = total_pop_capacity
@@ -149,9 +149,9 @@ func _assign_workers_from_population(available_workers: int = -1) -> void:
 func _producer_priority(b: BuildingScript) -> int:
 	# Lower = higher priority. Game design rule: sawmills first, then farms.
 	match b.building_id:
-		&"sawmill", &"sawmill_2":
+		&"sawmill":
 			return 0
-		&"farm", &"farm_2":
+		&"farm":
 			return 1
 		&"mine":
 			return 2

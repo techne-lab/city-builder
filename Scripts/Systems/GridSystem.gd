@@ -12,7 +12,7 @@ const BuildingDataScript := preload("res://Scripts/Data/BuildingData.gd")
 @export var show_origin_marker: bool = true
 
 ## Random blocked cells (cannot place buildings)
-@export var blocked_spawn_interval_sec: float = 2.5
+@export var blocked_spawn_interval_sec: float = 4.0
 @export var blocked_cell_color: Color = Color(1, 0.2, 0.2, 0.35)
 
 ## Stone tiles (cannot build on)

@@ -25,6 +25,16 @@ class_name BuildingData
 @export var color: Color = Color.WHITE
 @export var sprite: Texture2D
 
+# Upgrade system
+# Cost to upgrade from this building's current level to the next (scaled per level).
+@export var upgrade_cost: Dictionary = {}
+# Maximum level this building can reach (1 = not upgradable).
+@export var max_level: int = 5
+# Each level above 1 adds this fraction of base production (0.5 = +50% per level).
+@export var production_level_bonus: float = 0.5
+# Upgrade cost is multiplied by this value for each additional level.
+@export var upgrade_cost_scale: float = 1.5
+
 func is_producer() -> bool:
 	return produces_resource != &"" and production_amount != 0 and production_interval_sec > 0.0
 
