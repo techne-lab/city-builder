@@ -1,3 +1,43 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot import artifacts (Godot 3.x compatibility / some setups)
+.import/
+*.import
+
+# Export presets generated per-user
+export_presets.cfg
+
+# Mono / .NET (if enabled)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Build/Export output folders (common conventions)
+/build/
+/Build/
+/dist/
+/out/
+/exports/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Windows shortcuts / temp
+*.lnk
+*.tmp
+~$*
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Cursor local project metadata (optional)
+.cursor/
