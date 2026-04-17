@@ -23,6 +23,9 @@ var _resource_manager: Node
 var _place_tween: Tween
 var _sprite: Sprite2D
 
+# Current upgrade level (1–5).
+var level: int = 1
+
 # Production buildings require a worker to operate (assigned by GameManager).
 var _worker_assigned: bool = true
 var worker_assigned: bool:
@@ -91,14 +94,34 @@ func apply_building_data(id: StringName, data: Resource) -> void:
 		_apply_upgrade_visuals()
 
 func _apply_upgrade_visuals() -> void:
-	# Convention: *_2 are upgraded versions.
-	var upgraded := String(building_id).ends_with("_2")
-	if upgraded:
-		outline_color = upgraded_outline_color
-		outline_width = upgraded_outline_width
-	else:
-		outline_color = Color(0, 0, 0, 0.35)
-		outline_width = 2.0
+	# Outline and badge are now driven by `level` inside _draw(); just trigger redraw.
+	queue_redraw()
+
+func get_effective_production() -> int:
+	var data := building_data as BuildingDataScript
+	if data == null:
+		return 0
+	var bonus: float = data.production_level_bonus
+	return int(float(data.production_amount) * (1.0 + float(level - 1) * bonus))
+
+func get_upgrade_cost() -> Dictionary:
+	var data := building_data as BuildingDataScript
+	if data == null:
+		return {}
+	var base: Dictionary = data.upgrade_cost
+	if base.is_empty():
+		return {}
+	var scale_factor: float = pow(data.upgrade_cost_scale, float(level - 1))
+	var result := {}
+	for k in base.keys():
+		var v := int(base[k])
+		result[k] = maxi(1, roundi(float(v) * scale_factor))
+	return result
+
+func upgrade() -> void:
+	var data := building_data as BuildingDataScript
+	var max_lv: int = data.max_level if data != null else 5
+	level = mini(level + 1, max_lv)
 	queue_redraw()
 
 func set_cell_and_snap(new_cell: Vector2i, top_left_world: Vector2, new_cell_size: int) -> void:
@@ -145,7 +168,7 @@ func _on_production_timeout() -> void:
 		_resource_manager = get_node_or_null("/root/ResourceManager")
 	if _resource_manager == null:
 		return
-	_resource_manager.add(data.produces_resource, data.production_amount)
+	_resource_manager.add(data.produces_resource, get_effective_production())
 
 func play_place_feedback() -> void:
 	# Minimal "pop" animation to confirm placement.
@@ -165,14 +188,54 @@ func _draw() -> void:
 	var px_size := Vector2(size_cells.x * cell_size, size_cells.y * cell_size)
 	if _sprite == null or _sprite.texture == null:
 		draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
-	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, outline_width)
 
+	# Outline color and width scale with level.
+	var oc: Color
+	var ow: float
+	match level:
+		1:
+			oc = Color(0, 0, 0, 0.35)
+			ow = 2.0
+		2:
+			oc = Color(0.80, 0.50, 0.20, 0.95)  # Bronze
+			ow = 2.5
+		3:
+			oc = Color(0.75, 0.75, 0.75, 0.95)  # Silver
+			ow = 3.0
+		4:
+			oc = Color(1.0, 0.85, 0.0, 0.95)    # Gold
+			ow = 3.5
+		_:  # Level 5+
+			oc = Color(0.0, 0.95, 1.0, 0.95)    # Cyan
+			ow = 4.0
+	draw_rect(Rect2(Vector2.ZERO, px_size), oc, false, ow)
+
+	# Level badge: filled circle in the bottom-right corner (hidden at level 1).
+	if level >= 2:
+		var badge_r: float = 7.0
+		var badge_margin: float = 4.0
+		var badge_pos := Vector2(px_size.x - badge_margin - badge_r, px_size.y - badge_margin - badge_r)
+		var badge_color: Color
+		match level:
+			2: badge_color = Color(0.80, 0.50, 0.20, 0.95)
+			3: badge_color = Color(0.75, 0.75, 0.75, 0.95)
+			4: badge_color = Color(1.0, 0.85, 0.0, 0.95)
+			_: badge_color = Color(0.0, 0.95, 1.0, 0.95)
+		draw_circle(badge_pos, badge_r, badge_color)
+		draw_circle(badge_pos, badge_r, Color(0, 0, 0, 0.5), false, 1.0)
+		var font := ThemeDB.fallback_font
+		var font_size: int = 9
+		var lv_str := str(level)
+		var str_size := font.get_string_size(lv_str, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
+		var text_pos := badge_pos - str_size * 0.5 + Vector2(0.0, str_size.y * 0.5 - 1.0)
+		draw_string(font, text_pos, lv_str, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, Color(0.08, 0.08, 0.08, 1.0))
+
+	# Worker indicator circle (top-right corner).
 	if not show_worker_indicator:
 		return
 	var d := building_data as BuildingDataScript
 	if d == null or not d.is_producer():
 		return
-
 	var r := worker_indicator_radius_px
 	var pos := Vector2(px_size.x - worker_indicator_margin_px - r, worker_indicator_margin_px + r)
 	draw_circle(pos, r, (worker_assigned_color if worker_assigned else worker_unassigned_color))

@@ -520,35 +520,38 @@ func _select_placed_building(b: BuildingScript) -> void:
 	var db := building_db as BuildingDatabaseScript
 	var data := (db.get_by_id(id) if db != null else null) as BuildingDataScript
 	selected_label.text = "Selected: %s" % (data.display_name if data != null else String(id))
-	details_label.text = (_format_selected_building_details_with_upgrade_cost(id, data) if data != null else "Details: -")
+	details_label.text = (_format_selected_building_details_with_upgrade_cost(b, data) if data != null else "Details: -")
 	cell_details_label.text = ""
 	_refresh_upgrade_ui()
 
-func _format_selected_building_details_with_upgrade_cost(id: StringName, data: BuildingDataScript) -> String:
+func _format_selected_building_details_with_upgrade_cost(b: BuildingScript, data: BuildingDataScript) -> String:
 	var lines: Array[String] = []
+
+	# Level header (prominent)
+	var max_lv: int = data.max_level if data.max_level > 0 else 5
+	lines.append("Level: %d / %d" % [b.level, max_lv])
+	lines.append("")
 	lines.append("Details:")
+	lines.append("- build cost: %s" % _format_cost(data.cost))
 
-	# If an upgrade exists, show upgrade cost instead of initial build cost.
-	var upgrade_id := _get_upgrade_id_if_any(id)
-	if upgrade_id != &"":
-		var db := building_db as BuildingDatabaseScript
-		var up := (db.get_by_id(upgrade_id) if db != null else null) as BuildingDataScript
-		var up_cost: Dictionary = (up.cost if up != null else {})
-		lines.append("- upgrade cost: %s" % _format_cost(up_cost))
+	# Show upgrade cost for the next level (if not at max).
+	if b.level < max_lv:
+		lines.append("- upgrade cost: %s" % _format_cost(b.get_upgrade_cost()))
 	else:
-		lines.append("- cost: %s" % _format_cost(data.cost))
+		lines.append("- upgrade: MAX LEVEL")
 
-	# Production
+	# Production (show effective value at current level)
 	if data.produces_resource != &"" and data.production_amount != 0 and data.production_interval_sec > 0.0:
-		lines.append("- production: %d %s / %.1fs" % [data.production_amount, String(data.produces_resource), data.production_interval_sec])
+		var eff := b.get_effective_production()
+		lines.append("- production: %d %s / %.1fs" % [eff, String(data.produces_resource), data.production_interval_sec])
 	else:
 		lines.append("- production: none")
 
-	# Population / storage
+	# Population / storage (scale with level)
 	if data.population_capacity > 0:
-		lines.append("- pop cap: +%d" % data.population_capacity)
+		lines.append("- pop cap: +%d" % (data.population_capacity * b.level))
 	if data.storage_capacity_bonus > 0:
-		lines.append("- storage cap: +%d (all)" % data.storage_capacity_bonus)
+		lines.append("- storage cap: +%d (all)" % (data.storage_capacity_bonus * b.level))
 	if data.blocks_adjacent_infection:
 		lines.append("- stops red spread on adjacent tiles")
 
@@ -566,49 +569,41 @@ func _refresh_upgrade_ui() -> void:
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		return
-	var from_id := _selected_placed_building.building_id
-	var to_id := _get_upgrade_id_if_any(from_id)
-	if to_id == &"":
+
+	var b := _selected_placed_building
+	var data := b.building_data as BuildingDataScript
+	if data == null:
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		return
 
+	var max_lv: int = data.max_level if data.max_level > 0 else 5
 	upgrade_button.visible = true
 
-	var db := building_db as BuildingDatabaseScript
-	var to_data := (db.get_by_id(to_id) if db != null else null) as BuildingDataScript
-	if to_data == null:
+	if b.level >= max_lv:
+		upgrade_button.text = "MAX LEVEL"
 		upgrade_button.disabled = true
 		return
 
-	var cost: Dictionary = to_data.cost
+	var cost := b.get_upgrade_cost()
 	var can: bool = (_resource_manager.can_afford(cost) if _resource_manager != null else false)
+	upgrade_button.text = "Upgrade → Lv %d" % (b.level + 1)
 	upgrade_button.disabled = not can
-
-func _get_upgrade_id_if_any(from_id: StringName) -> StringName:
-	# Convention: base_id -> base_id_2
-	if String(from_id).ends_with("_2"):
-		return &""
-	var candidate := StringName("%s_2" % String(from_id))
-	var db := building_db as BuildingDatabaseScript
-	if db == null:
-		return &""
-	return (candidate if db.get_by_id(candidate) != null else &"")
 
 func _try_upgrade_selected_building() -> void:
 	if _selected_placed_building == null:
 		return
-	var from_id := _selected_placed_building.building_id
-	var to_id := _get_upgrade_id_if_any(from_id)
-	if to_id == &"":
+
+	var b := _selected_placed_building
+	var data := b.building_data as BuildingDataScript
+	if data == null:
 		return
 
-	var db := building_db as BuildingDatabaseScript
-	var to_data := (db.get_by_id(to_id) if db != null else null) as BuildingDataScript
-	if to_data == null:
+	var max_lv: int = data.max_level if data.max_level > 0 else 5
+	if b.level >= max_lv:
 		return
 
-	var cost: Dictionary = to_data.cost
+	var cost := b.get_upgrade_cost()
 	if _resource_manager == null:
 		_resource_manager = get_node_or_null("/root/ResourceManager")
 	if _resource_manager == null:
@@ -620,13 +615,15 @@ func _try_upgrade_selected_building() -> void:
 		_refresh_upgrade_ui()
 		return
 
-	_selected_placed_building.apply_building_data(to_id, to_data)
+	b.upgrade()
 
-	# Recompute derived stats and worker assignment after changes.
+	# Recompute derived stats (pop capacity, storage) after upgrade.
 	if _game_manager != null and _game_manager.has_method("on_buildings_changed"):
 		_game_manager.call("on_buildings_changed")
+
+	# Refresh the details panel to reflect the new level.
+	_select_placed_building(b)
 	_update_rates()
-	_refresh_upgrade_ui()
 
 func _show_selected_cell_props(props: Dictionary) -> void:
 	var cell: Vector2i = props.get(&"cell", Vector2i(-999, -999))
@@ -730,9 +727,9 @@ func _update_rates() -> void:
 			if data.is_producer() and not b.worker_assigned:
 				continue
 			if data.produces_resource == &"food" and data.production_interval_sec > 0.0:
-				food_prod_per_sec += float(data.production_amount) / float(data.production_interval_sec)
+				food_prod_per_sec += float(b.get_effective_production()) / float(data.production_interval_sec)
 			if data.produces_resource == &"wood" and data.production_interval_sec > 0.0:
-				wood_prod_per_sec += float(data.production_amount) / float(data.production_interval_sec)
+				wood_prod_per_sec += float(b.get_effective_production()) / float(data.production_interval_sec)
 
 	# Food consumption & gold income per second from population rules
 	var pop: int = (_population_manager.population if _population_manager != null else 0)
