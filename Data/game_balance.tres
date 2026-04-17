@@ -64,7 +64,7 @@ script = ExtResource("2_tuning")
 id = &"sawmill"
 cost = {
 "gold": 6,
-"wood": 8
+"wood": 5
 }
 produces_resource = &"wood"
 production_amount = 2
@@ -91,13 +91,14 @@ color = Color(0.64, 0.5, 0.34, 1)
 script = ExtResource("2_tuning")
 id = &"storage"
 cost = {
+"gold": 50,
 "wood": 15
 }
 produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
-storage_capacity_bonus = 10
+storage_capacity_bonus = 15
 color = Color(0.7, 0.7, 0.75, 1)
 
 [sub_resource type="Resource" id="Tuning_mine"]
@@ -134,7 +135,6 @@ victory_population = 30
 base_wood_cap = 15
 base_food_cap = 15
 base_gold_cap = 15
-base_stone_cap = 15
 starting_food = 10
 starting_gold = 10
 starting_wood = 20

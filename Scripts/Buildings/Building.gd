@@ -23,6 +23,16 @@ var _resource_manager: Node
 var _place_tween: Tween
 var _sprite: Sprite2D
 
+var _corrupted: bool = false
+var corrupted: bool:
+	get:
+		return _corrupted
+	set(value):
+		if _corrupted == value:
+			return
+		_corrupted = value
+		queue_redraw()
+
 # Production buildings require a worker to operate (assigned by GameManager).
 var _worker_assigned: bool = true
 var worker_assigned: bool:
@@ -134,6 +144,8 @@ func _clear_production() -> void:
 		_production_timer = null
 
 func _on_production_timeout() -> void:
+	if corrupted:
+		return
 	var data := building_data as BuildingDataScript
 	if data == null:
 		return
@@ -166,6 +178,9 @@ func _draw() -> void:
 	if _sprite == null or _sprite.texture == null:
 		draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
 	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, outline_width)
+
+	if corrupted:
+		draw_rect(Rect2(Vector2.ZERO, px_size), Color(1.0, 0.15, 0.15, 0.25), true)
 
 	if not show_worker_indicator:
 		return

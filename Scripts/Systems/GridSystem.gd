@@ -1,6 +1,8 @@
 extends Node2D
 class_name GridSystem
 
+signal building_corrupted(building: Node, cell: Vector2i, building_id: StringName)
+
 const BuildingScript := preload("res://Scripts/Buildings/Building.gd")
 const BuildingDataScript := preload("res://Scripts/Data/BuildingData.gd")
 
@@ -12,7 +14,7 @@ const BuildingDataScript := preload("res://Scripts/Data/BuildingData.gd")
 @export var show_origin_marker: bool = true
 
 ## Random blocked cells (cannot place buildings)
-@export var blocked_spawn_interval_sec: float = 2.5
+@export var blocked_spawn_interval_sec: float = 5.0
 @export var blocked_cell_color: Color = Color(1, 0.2, 0.2, 0.35)
 
 ## Stone tiles (cannot build on)
@@ -38,9 +40,12 @@ var _stone: Dictionary = {} # key = Vector2i cell, value = true
 var _blocked_timer: Timer
 var _rng := RandomNumberGenerator.new()
 var _infection_time_by_cell: Dictionary = {} # key = Vector2i, value = float seconds
+var _building_corruption_time_by_cell: Dictionary = {} # key = Vector2i, value = float seconds
+var _corrupted_buildings: Dictionary = {} # key = Vector2i, value = true
 
 const INFECTION_REQUIRED_ADJ_BLOCKED: int = 2
 const INFECTION_DURATION_SEC: float = 6.0
+const BUILDING_CORRUPTION_DURATION_SEC: float = 20.0
 
 func _ready() -> void:
 	_rng.randomize()
@@ -63,6 +68,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_update_infection(delta)
+	_update_building_corruption(delta)
 
 func _draw() -> void:
 	if show_ground:
@@ -184,11 +190,23 @@ func mine_stone(cell: Vector2i) -> bool:
 
 func has_adjacent_building(cell: Vector2i) -> bool:
 	# 4-neighborhood adjacency to already placed buildings.
+	# Rule: walls do NOT count as expansion anchors.
 	# Note: preview ghost is not in _occupied, so it doesn't affect this rule.
 	var dirs: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 	for d in dirs:
 		var n: Vector2i = cell + d
-		if _occupied.has(n):
+		var payload: Variant = get_occupied_payload(n)
+		if payload is BuildingScript:
+			if (payload as BuildingScript).building_id != &"wall":
+				return true
+	return false
+
+func has_adjacent_building_or_wall(cell: Vector2i) -> bool:
+	# 4-neighborhood adjacency to any placed building, including walls.
+	var dirs: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
+	for d in dirs:
+		var n: Vector2i = cell + d
+		if get_occupied_payload(n) is BuildingScript:
 			return true
 	return false
 
@@ -308,12 +326,75 @@ func occupy_cell(cell: Vector2i, payload: Variant = true) -> bool:
 
 func free_cell(cell: Vector2i) -> void:
 	_occupied.erase(cell)
+	_building_corruption_time_by_cell.erase(cell)
+	_corrupted_buildings.erase(cell)
 
 func clear() -> void:
 	_occupied.clear()
 	_blocked.clear()
 	_stone.clear()
+	_building_corruption_time_by_cell.clear()
+	_corrupted_buildings.clear()
 	queue_redraw()
+
+func is_building_corrupted_at_cell(cell: Vector2i) -> bool:
+	return _corrupted_buildings.has(cell)
+
+func are_all_non_wall_buildings_corrupted() -> bool:
+	var total := 0
+	var corrupted := 0
+	for k in _occupied.keys():
+		var cell := k as Vector2i
+		var payload: Variant = get_occupied_payload(cell)
+		if not (payload is BuildingScript):
+			continue
+		var b := payload as BuildingScript
+		if b.building_id == &"wall":
+			continue
+		total += 1
+		if b.corrupted or is_building_corrupted_at_cell(cell):
+			corrupted += 1
+	return total > 0 and corrupted >= total
+
+func _update_building_corruption(delta: float) -> void:
+	# Rule: if a building (except walls) is adjacent to at least 1 blocked cell
+	# continuously for 20s, the building becomes corrupted.
+	if _occupied.is_empty() or _blocked.is_empty():
+		_building_corruption_time_by_cell.clear()
+		return
+
+	var dirs: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
+	for k in _occupied.keys():
+		var cell := k as Vector2i
+		var payload: Variant = get_occupied_payload(cell)
+		if not (payload is BuildingScript):
+			_building_corruption_time_by_cell.erase(cell)
+			continue
+		var b := payload as BuildingScript
+		if b.building_id == &"wall":
+			_building_corruption_time_by_cell.erase(cell)
+			continue
+		if b.corrupted or _corrupted_buildings.has(cell):
+			_building_corruption_time_by_cell.erase(cell)
+			continue
+
+		var adj_blocked := false
+		for d in dirs:
+			if _blocked.has(cell + d):
+				adj_blocked = true
+				break
+
+		if adj_blocked:
+			var t: float = float(_building_corruption_time_by_cell.get(cell, 0.0)) + delta
+			if t >= BUILDING_CORRUPTION_DURATION_SEC:
+				_corrupted_buildings[cell] = true
+				b.corrupted = true
+				_building_corruption_time_by_cell.erase(cell)
+				emit_signal("building_corrupted", b, cell, b.building_id)
+			else:
+				_building_corruption_time_by_cell[cell] = t
+		else:
+			_building_corruption_time_by_cell.erase(cell)
 
 func get_occupied_payload(cell: Vector2i) -> Variant:
 	return _occupied.get(cell, null)

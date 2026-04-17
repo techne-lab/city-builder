@@ -39,6 +39,7 @@ const PurifyPreviewScript := preload("res://Scripts/UI/PurifyPreview.gd")
 @onready var tutorial_panel: Control = %TutorialPanel
 @onready var tutorial_text: Label = %TutorialText
 @onready var victory_panel: Control = $Victory
+@onready var defeat_panel: Control = $Defeat
 
 var _building_system: Node
 var _grid: Node2D
@@ -103,6 +104,8 @@ func _ready() -> void:
 
 	if _game_manager != null:
 		_game_manager.victory_reached.connect(_on_victory)
+		if _game_manager.has_signal("defeat_reached"):
+			_game_manager.defeat_reached.connect(_on_defeat)
 
 	# Buttons
 	%SelectCellButton.toggled.connect(_set_cell_select_mode)
@@ -137,6 +140,18 @@ func _ready() -> void:
 	add_child(_tutorial_timer)
 	_tutorial_timer.timeout.connect(_update_tutorial)
 	_update_tutorial()
+	_refresh_overlay_minimal()
+
+func _refresh_overlay_minimal() -> void:
+	# Overlay should only show essential info (hide empty/"none" placeholders).
+	if selected_label != null:
+		var t := selected_label.text.strip_edges()
+		selected_label.visible = t != "" and t != "Selected: (none)"
+	if details_label != null:
+		var dt := details_label.text.strip_edges()
+		details_label.visible = dt != "" and dt != "Details: -"
+	if cell_details_label != null:
+		cell_details_label.visible = cell_details_label.text.strip_edges() != ""
 
 func _select(id: StringName) -> void:
 	if _building_system == null:
@@ -292,20 +307,28 @@ func _on_selection_changed(id: StringName) -> void:
 	if id == &"":
 		selected_label.text = "Selected: (none)"
 		details_label.text = "Details: -"
+		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 		return
 	var db := building_db as BuildingDatabaseScript
 	if db == null:
 		selected_label.text = "Selected: %s" % String(id)
 		details_label.text = "Details: -"
+		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 		return
 	var data := db.get_by_id(id) as BuildingDataScript
 	if data == null:
 		selected_label.text = "Selected: %s" % String(id)
 		details_label.text = "Details: -"
+		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 		return
 
 	selected_label.text = "Selected: %s" % data.display_name
 	details_label.text = _format_building_details(id, data)
+	cell_details_label.text = ""
+	_refresh_overlay_minimal()
 
 func _set_cell_select_mode(enabled: bool) -> void:
 	_cell_select_mode = enabled
@@ -327,9 +350,11 @@ func _set_cell_select_mode(enabled: bool) -> void:
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
+		_refresh_overlay_minimal()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 
 func _set_purify_mode(enabled: bool) -> void:
 	_purify_mode = enabled
@@ -353,9 +378,11 @@ func _set_purify_mode(enabled: bool) -> void:
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
+		_refresh_overlay_minimal()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 
 func _set_mining_mode(enabled: bool) -> void:
 	_mining_mode = enabled
@@ -377,9 +404,11 @@ func _set_mining_mode(enabled: bool) -> void:
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
+		_refresh_overlay_minimal()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
+		_refresh_overlay_minimal()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _purify_mode:
@@ -389,8 +418,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_mining_input(event)
 		return
 	if not _cell_select_mode:
-		# Allow selecting placed buildings (when not placing).
-		_try_select_placed_building_input(event)
+		# When not in selection mode, clicking placed buildings should not show info.
 		return
 	if _grid == null:
 		return
@@ -437,6 +465,7 @@ func _try_select_placed_building_input(event: InputEvent) -> void:
 		else:
 			# Clicking empty terrain clears inspection selection, but keeps current placement mode.
 			_clear_selected_placed_building()
+			_refresh_overlay_minimal()
 
 func _try_purify_input(event: InputEvent) -> void:
 	if _grid == null:
@@ -523,6 +552,7 @@ func _select_placed_building(b: BuildingScript) -> void:
 	details_label.text = (_format_selected_building_details_with_upgrade_cost(id, data) if data != null else "Details: -")
 	cell_details_label.text = ""
 	_refresh_upgrade_ui()
+	_refresh_overlay_minimal()
 
 func _format_selected_building_details_with_upgrade_cost(id: StringName, data: BuildingDataScript) -> String:
 	var lines: Array[String] = []
@@ -541,8 +571,6 @@ func _format_selected_building_details_with_upgrade_cost(id: StringName, data: B
 	# Production
 	if data.produces_resource != &"" and data.production_amount != 0 and data.production_interval_sec > 0.0:
 		lines.append("- production: %d %s / %.1fs" % [data.production_amount, String(data.produces_resource), data.production_interval_sec])
-	else:
-		lines.append("- production: none")
 
 	# Population / storage
 	if data.population_capacity > 0:
@@ -558,6 +586,13 @@ func _clear_selected_placed_building() -> void:
 	_selected_placed_building = null
 	upgrade_button.visible = false
 	upgrade_button.disabled = true
+	if selected_label != null:
+		selected_label.text = "Selected: (none)"
+	if details_label != null:
+		details_label.text = "Details: -"
+	if cell_details_label != null:
+		cell_details_label.text = ""
+	_refresh_overlay_minimal()
 
 func _refresh_upgrade_ui() -> void:
 	if upgrade_button == null:
@@ -649,6 +684,7 @@ func _show_selected_cell_props(props: Dictionary) -> void:
 		if occupant_name != "":
 			lines.append("- node: %s" % occupant_name)
 	cell_details_label.text = "\n".join(lines)
+	_refresh_overlay_minimal()
 
 func _format_building_details(_id: StringName, data: BuildingDataScript) -> String:
 	var lines: Array[String] = []
@@ -661,8 +697,6 @@ func _format_building_details(_id: StringName, data: BuildingDataScript) -> Stri
 	# Production
 	if data.produces_resource != &"" and data.production_amount != 0 and data.production_interval_sec > 0.0:
 		lines.append("- production: %d %s / %.1fs" % [data.production_amount, String(data.produces_resource), data.production_interval_sec])
-	else:
-		lines.append("- production: none")
 
 	# Population / storage
 	if data.population_capacity > 0:
@@ -693,6 +727,16 @@ func _on_victory() -> void:
 	victory_panel.visible = true
 	if tutorial_panel != null:
 		tutorial_panel.visible = false
+	if defeat_panel != null:
+		defeat_panel.visible = false
+
+func _on_defeat() -> void:
+	if defeat_panel != null:
+		defeat_panel.visible = true
+	if tutorial_panel != null:
+		tutorial_panel.visible = false
+	if victory_panel != null:
+		victory_panel.visible = false
 
 func _show_toast(message: String) -> void:
 	if toast_label == null or toast_panel == null:

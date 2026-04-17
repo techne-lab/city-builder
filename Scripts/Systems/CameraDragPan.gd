@@ -7,6 +7,10 @@ class_name CameraDragPan
 @export var drag_button: MouseButton = MOUSE_BUTTON_RIGHT
 @export var enabled: bool = true
 
+# Extra space (in pixels) allowed outside the grid when panning.
+# Makes it possible to drag the camera further on the sides.
+@export var pan_margin_px: float = 600.0
+
 var _camera: Camera2D
 var _grid: Node2D
 var _dragging: bool = false
@@ -61,6 +65,12 @@ func _clamp_to_grid_bounds() -> void:
 	var min_y := _grid.global_position.y + half.y
 	var max_x := _grid.global_position.x + w - half.x
 	var max_y := _grid.global_position.y + h - half.y
+
+	var m := maxf(pan_margin_px, 0.0)
+	min_x -= m
+	min_y -= m
+	max_x += m
+	max_y += m
 
 	# If viewport is larger than the grid, just keep centered on grid.
 	if min_x > max_x:

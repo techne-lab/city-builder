@@ -64,7 +64,8 @@ script = ExtResource("2_data")
 id = &"sawmill"
 display_name = "Sawmill"
 cost = {
-"wood": 15
+"gold": 6,
+"wood": 5
 }
 produces_resource = &"wood"
 production_amount = 2
@@ -92,13 +93,14 @@ script = ExtResource("2_data")
 id = &"storage"
 display_name = "Storage"
 cost = {
+"gold": 50,
 "wood": 20
 }
 produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
-storage_capacity_bonus = 0
+storage_capacity_bonus = 15
 color = Color(0.7, 0.7, 0.75, 1)
 
 [sub_resource type="Resource" id="BuildingData_mine"]

@@ -97,8 +97,11 @@ func _try_place_at_mouse() -> void:
 		_play_invalid_placement_feedback()
 		return
 
-	# Expansion rule: can only place adjacent to an existing building.
-	if not grid.has_adjacent_building(cell):
+	# Expansion rule:
+	# - Any building can only be placed next to an existing NON-wall building.
+	# - A wall can be placed next to any building, including other walls.
+	var ok_adjacent: bool = (grid.has_adjacent_building_or_wall(cell) if selected_building_id == &"wall" else grid.has_adjacent_building(cell))
+	if not ok_adjacent:
 		emit_signal("placement_denied", "You can only build next to your existing buildings.")
 		_play_invalid_placement_feedback()
 		return
@@ -164,7 +167,8 @@ func _update_preview_at_cell(cell: Vector2i) -> void:
 
 func _update_preview_tint(cell: Vector2i) -> void:
 	var g := _grid as GridSystemScript
-	var ok: bool = (g.is_cell_free(cell) and g.has_adjacent_building(cell))
+	var ok_adjacent: bool = (g.has_adjacent_building_or_wall(cell) if selected_building_id == &"wall" else g.has_adjacent_building(cell))
+	var ok: bool = (g.is_cell_free(cell) and ok_adjacent)
 	_preview.modulate = (preview_ok_tint if ok else preview_blocked_tint)
 	_preview.modulate.a = preview_alpha
 

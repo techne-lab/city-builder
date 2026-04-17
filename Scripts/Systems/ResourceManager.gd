@@ -94,6 +94,9 @@ func try_spend(cost: Dictionary) -> bool:
 
 func _clamp_to_cap(resource_name: StringName, amount: int) -> int:
 	var a: int = maxi(amount, 0)
+	# Design rule: gold is uncapped (can exceed storage capacity).
+	if resource_name == GOLD:
+		return a
 	var cap: int = maxi(get_cap(resource_name), 0)
 	return mini(a, cap)
 

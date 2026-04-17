@@ -19,3 +19,7 @@ config/icon="res://icon.svg"
 
 ResourceManager="*res://Scripts/Systems/ResourceManager.gd"
 PopulationManager="*res://Scripts/Systems/PopulationManager.gd"
+
+[display]
+
+window/size/mode=2

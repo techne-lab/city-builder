@@ -1,6 +1,7 @@
 extends Node
 
 signal victory_reached
+signal defeat_reached
 
 @export var building_system_path: NodePath
 @export var balance: Resource
@@ -15,11 +16,13 @@ const GridSystemScript := preload("res://Scripts/Systems/GridSystem.gd")
 
 var _building_system: Node2D
 var _victory: bool = false
+var _defeat: bool = false
 var _victory_population: int = 30
 var _base_caps := {&"wood": 100, &"food": 100, &"gold": 100, &"stone": 100}
 var _resource_manager: Node
 var _population_manager: Node
 var _containment_timer: Timer
+var _grid: Node
 
 func _ready() -> void:
 	_building_system = get_node_or_null(building_system_path) as Node2D
@@ -35,6 +38,13 @@ func _ready() -> void:
 	_apply_balance_if_any()
 
 	_place_initial_house_center()
+
+	# Listen for building corruption (defeat + house penalty).
+	var bs := _building_system as BuildingSystemScript
+	if bs != null:
+		_grid = bs.get_node_or_null(bs.grid_path)
+		if _grid != null and _grid.has_signal("building_corrupted"):
+			_grid.connect("building_corrupted", Callable(self, "_on_building_corrupted"))
 
 	if _population_manager != null:
 		_population_manager.set_population(0)
@@ -71,7 +81,7 @@ func _on_population_changed(pop: int, _cap: int) -> void:
 	# Victory is no longer based on population; it's based on containing red spread.
 
 func _check_containment_victory() -> void:
-	if _victory:
+	if _victory or _defeat:
 		return
 	var bs := _building_system as BuildingSystemScript
 	if bs == null:
@@ -83,11 +93,41 @@ func _check_containment_victory() -> void:
 		_trigger_victory()
 
 func _trigger_victory() -> void:
+	if _defeat:
+		return
 	_victory = true
 	var bs := _building_system as BuildingSystemScript
 	if bs != null:
 		bs.set_gameplay_enabled(false)
 	emit_signal("victory_reached")
+
+func _trigger_defeat() -> void:
+	if _victory:
+		return
+	_defeat = true
+	var bs := _building_system as BuildingSystemScript
+	if bs != null:
+		bs.set_gameplay_enabled(false)
+	emit_signal("defeat_reached")
+
+func _on_building_corrupted(_building: Node, _cell: Vector2i, building_id: StringName) -> void:
+	if _defeat or _victory:
+		return
+
+	# House penalty: losing a house to corruption reduces current population.
+	if building_id == &"house" or building_id == &"house_2":
+		if _population_manager != null:
+			_population_manager.set_population(maxi(_population_manager.population - 1, 0))
+
+	# Defeat: if all non-wall buildings are corrupted.
+	var bs := _building_system as BuildingSystemScript
+	if bs == null:
+		return
+	var grid := (bs.get_node_or_null(bs.grid_path) as GridSystemScript)
+	if grid == null:
+		return
+	if grid.are_all_non_wall_buildings_corrupted():
+		_trigger_defeat()
 
 func _recalculate_derived_from_buildings() -> void:
 	# One pass for all building-derived stats (keeps the prototype deterministic).
