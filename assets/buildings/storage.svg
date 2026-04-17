@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Cozy flat sprite: Storage (64x64), transparent background -->
+  <!-- Shadow -->
+  <ellipse cx="32" cy="52" rx="21" ry="6.5" fill="#1b1b1b" opacity="0.16"/>
+
+  <!-- Warehouse body -->
+  <rect x="14" y="24" width="36" height="28" rx="5" fill="#c79b6a"/>
+  <rect x="16" y="26" width="32" height="24" rx="4" fill="#d6ad7a"/>
+  <rect x="14" y="24" width="36" height="28" rx="5" fill="#000" opacity="0.05"/>
+
+  <!-- Roof -->
+  <path d="M12 26 L32 14 L52 26 L52 30 L12 30 Z" fill="#c46a6a"/>
+  <path d="M32 14 L52 26 L52 30 L32 30 Z" fill="#000" opacity="0.08"/>
+  <path d="M12 26 L32 14 L52 26" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Big door -->
+  <rect x="28" y="34" width="14" height="18" rx="3" fill="#8f5f3f"/>
+  <path d="M30 36 V50 M33 36 V50 M36 36 V50 M39 36 V50" stroke="#000" opacity="0.15" stroke-width="1.2"/>
+  <circle cx="40" cy="43" r="1.2" fill="#f3d48a"/>
+
+  <!-- Crate + barrel -->
+  <rect x="16" y="40" width="10" height="10" rx="2" fill="#b87a4f"/>
+  <path d="M17 45 H25 M21 41 V49" stroke="#000" opacity="0.18" stroke-width="1.2"/>
+  <rect x="49" y="40" width="7" height="10" rx="3" fill="#a36a44"/>
+  <path d="M49 43 H56 M49 47 H56" stroke="#000" opacity="0.18" stroke-width="1.2"/>
+
+  <!-- Base trim -->
+  <rect x="14" y="51" width="36" height="2.5" rx="1.2" fill="#000" opacity="0.10"/>
+</svg>

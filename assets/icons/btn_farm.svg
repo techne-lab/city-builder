@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Button icon: Farm (32x32), transparent background -->
+  <ellipse cx="16" cy="26.5" rx="10.5" ry="3" fill="#1b1b1b" opacity="0.10"/>
+  <rect x="7" y="14" width="18" height="12" rx="4" fill="#8dca78"/>
+  <path d="M9 17 C12 16, 15 18, 18 17 C21 16, 23 18, 24 17" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+  <rect x="20" y="11" width="6" height="7" rx="2" fill="#d6ad7a"/>
+  <path d="M19 12 L23 9 L27 12 L27 13.5 L19 13.5 Z" fill="#b56c5e"/>
+</svg>

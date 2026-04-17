@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Seam-friendly grass tile A (32x32), no transparency -->
+  <rect x="0" y="0" width="32" height="32" fill="#7db86a"/>
+  <!-- soft mottling, avoids touching edges for seamless tiling -->
+  <circle cx="9" cy="10" r="6" fill="#8dca78" opacity="0.55"/>
+  <circle cx="22" cy="14" r="7" fill="#6fb15f" opacity="0.40"/>
+  <circle cx="14" cy="22" r="7" fill="#8dca78" opacity="0.35"/>
+  <path d="M6 18 C9 16, 12 19, 15 17" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <path d="M18 8 C20 7, 23 9, 26 8" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+</svg>

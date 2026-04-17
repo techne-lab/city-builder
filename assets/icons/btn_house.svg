@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Button icon: House (32x32), transparent background -->
+  <ellipse cx="16" cy="26.5" rx="10" ry="3" fill="#1b1b1b" opacity="0.10"/>
+  <rect x="9" y="14" width="14" height="12" rx="3" fill="#d6ad7a"/>
+  <path d="M8 15 L16 8 L24 15 L24 17 L8 17 Z" fill="#c46a6a"/>
+  <rect x="14" y="18" width="4" height="8" rx="2" fill="#8f5f3f"/>
+  <rect x="10.5" y="18" width="3.5" height="3.5" rx="1.2" fill="#8cc3d8"/>
+</svg>

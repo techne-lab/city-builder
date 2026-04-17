@@ -21,6 +21,7 @@ var building_data: Resource
 var _production_timer: Timer
 var _resource_manager: Node
 var _place_tween: Tween
+var _sprite: Sprite2D
 
 # Production buildings require a worker to operate (assigned by GameManager).
 var _worker_assigned: bool = true
@@ -45,6 +46,34 @@ func set_visual(type_id: int, color: Color) -> void:
 	fill_color = color
 	queue_redraw()
 
+func _ready() -> void:
+	_ensure_sprite()
+
+func _ensure_sprite() -> void:
+	if _sprite != null:
+		return
+	_sprite = get_node_or_null("Sprite") as Sprite2D
+	if _sprite == null:
+		_sprite = Sprite2D.new()
+		_sprite.name = "Sprite"
+		add_child(_sprite)
+	# We keep the Building node anchored top-left; the sprite fits the cell.
+	_sprite.centered = false
+	_sprite.position = Vector2.ZERO
+	_sprite.z_index = 0
+
+func _set_sprite_texture(tex: Texture2D) -> void:
+	_ensure_sprite()
+	_sprite.texture = tex
+	_sprite.visible = tex != null
+
+func _sync_sprite_scale() -> void:
+	if _sprite == null or _sprite.texture == null:
+		return
+	# Source art is 64x64; scale it to the current cell size (default 32).
+	var s := float(cell_size) / 64.0
+	_sprite.scale = Vector2(s, s)
+
 func apply_building_data(id: StringName, data: Resource) -> void:
 	building_id = id
 	building_data = data
@@ -52,9 +81,12 @@ func apply_building_data(id: StringName, data: Resource) -> void:
 	var d := building_data as BuildingDataScript
 	if d != null:
 		set_visual(building_type, d.color)
+		_set_sprite_texture(d.sprite)
+		_sync_sprite_scale()
 		_apply_upgrade_visuals()
 		_setup_production_from_data(d)
 	else:
+		_set_sprite_texture(null)
 		_clear_production()
 		_apply_upgrade_visuals()
 
@@ -73,6 +105,7 @@ func set_cell_and_snap(new_cell: Vector2i, top_left_world: Vector2, new_cell_siz
 	cell = new_cell
 	cell_size = new_cell_size
 	global_position = top_left_world
+	_sync_sprite_scale()
 	queue_redraw()
 
 func _setup_production_from_data(d: Resource) -> void:
@@ -128,9 +161,10 @@ func play_place_feedback() -> void:
 	_place_tween.tween_property(self, "scale", base_scale, 0.14)
 
 func _draw() -> void:
-	# Simple placeholder: filled rect + outline, anchored top-left.
+	# Visuals: sprite when available; otherwise placeholder rect. Always keep outline for readability.
 	var px_size := Vector2(size_cells.x * cell_size, size_cells.y * cell_size)
-	draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
+	if _sprite == null or _sprite.texture == null:
+		draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
 	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, outline_width)
 
 	if not show_worker_indicator:

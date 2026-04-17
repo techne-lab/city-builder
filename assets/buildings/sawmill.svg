@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Cozy flat sprite: Sawmill (64x64), transparent background -->
+  <!-- Shadow -->
+  <ellipse cx="32" cy="52" rx="20" ry="6.5" fill="#1b1b1b" opacity="0.16"/>
+
+  <!-- Main wooden frame -->
+  <rect x="14" y="26" width="30" height="24" rx="4" fill="#c79b6a"/>
+  <rect x="16" y="28" width="26" height="20" rx="3" fill="#d6ad7a"/>
+  <rect x="14" y="26" width="30" height="24" rx="4" fill="#000" opacity="0.05"/>
+
+  <!-- Roof -->
+  <path d="M12 28 L29 18 L46 28 L46 32 L12 32 Z" fill="#b56c5e"/>
+  <path d="M29 18 L46 28 L46 32 L29 32 Z" fill="#000" opacity="0.08"/>
+  <path d="M12 28 L29 18 L46 28" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Saw blade hint -->
+  <circle cx="24" cy="40" r="6.5" fill="#a9b3ba"/>
+  <circle cx="24" cy="40" r="5.2" fill="#c8d0d6"/>
+  <path d="M24 34.2 V45.8 M18.2 40 H29.8 M19.9 35.9 L28.1 44.1 M28.1 35.9 L19.9 44.1" stroke="#8c969c" stroke-width="1"/>
+
+  <!-- Log stacks -->
+  <rect x="40" y="34" width="14" height="6" rx="3" fill="#a36a44"/>
+  <rect x="42" y="32" width="14" height="6" rx="3" fill="#b87a4f"/>
+  <rect x="38" y="40" width="16" height="6" rx="3" fill="#b87a4f"/>
+  <circle cx="54" cy="35" r="2" fill="#8f5f3f" opacity="0.55"/>
+  <circle cx="56" cy="33" r="2" fill="#8f5f3f" opacity="0.55"/>
+  <circle cx="52" cy="41" r="2" fill="#8f5f3f" opacity="0.55"/>
+
+  <!-- Base trim -->
+  <rect x="14" y="49.5" width="30" height="2.5" rx="1.2" fill="#000" opacity="0.10"/>
+</svg>

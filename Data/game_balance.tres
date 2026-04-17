@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GameBalance" load_steps=10 format=3 uid="uid://dk3i03blwhirb"]
+[gd_resource type="Resource" script_class="GameBalance" load_steps=12 format=3 uid="uid://dk3i03blwhirb"]
 
 [ext_resource type="Script" path="res://Scripts/Data/GameBalance.gd" id="1_balance"]
 [ext_resource type="Script" path="res://Scripts/Data/BuildingTuning.gd" id="2_tuning"]
@@ -97,15 +97,44 @@ produces_resource = &""
 production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
-storage_capacity_bonus = 100
+storage_capacity_bonus = 10
 color = Color(0.7, 0.7, 0.75, 1)
+
+[sub_resource type="Resource" id="Tuning_mine"]
+script = ExtResource("2_tuning")
+id = &"mine"
+cost = {
+"gold": 100,
+"stone": 5
+}
+produces_resource = &"stone"
+production_amount = 1
+production_interval_sec = 10.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.55, 0.58, 0.62, 1)
+
+[sub_resource type="Resource" id="Tuning_wall"]
+script = ExtResource("2_tuning")
+id = &"wall"
+cost = {
+"gold": 10,
+"stone": 5
+}
+produces_resource = &""
+production_amount = 0
+production_interval_sec = 0.0
+population_capacity = 0
+storage_capacity_bonus = 0
+color = Color(0.62, 0.6, 0.58, 1)
 
 [resource]
 script = ExtResource("1_balance")
 victory_population = 30
-base_wood_cap = 100
-base_food_cap = 100
-base_gold_cap = 100
+base_wood_cap = 15
+base_food_cap = 15
+base_gold_cap = 15
+base_stone_cap = 15
 starting_food = 10
 starting_gold = 10
 starting_wood = 20
@@ -116,4 +145,4 @@ gold_income_interval_sec = 5.0
 starvation_decrease_per_tick = 1
 growth_per_tick = 1
 food_cost_per_new_person = 1
-buildings = Array[ExtResource("2_tuning")]([SubResource("Tuning_house"), SubResource("Tuning_house_2"), SubResource("Tuning_farm"), SubResource("Tuning_farm_2"), SubResource("Tuning_sawmill"), SubResource("Tuning_sawmill_2"), SubResource("Tuning_storage")])
+buildings = Array[ExtResource("2_tuning")]([SubResource("Tuning_house"), SubResource("Tuning_house_2"), SubResource("Tuning_farm"), SubResource("Tuning_farm_2"), SubResource("Tuning_sawmill"), SubResource("Tuning_sawmill_2"), SubResource("Tuning_storage"), SubResource("Tuning_mine"), SubResource("Tuning_wall")])

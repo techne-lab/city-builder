@@ -97,6 +97,12 @@ func _try_place_at_mouse() -> void:
 		_play_invalid_placement_feedback()
 		return
 
+	# Expansion rule: can only place adjacent to an existing building.
+	if not grid.has_adjacent_building(cell):
+		emit_signal("placement_denied", "You can only build next to your existing buildings.")
+		_play_invalid_placement_feedback()
+		return
+
 	# Pay cost (prototype): if you can't pay, placement is invalid.
 	var db := building_db as BuildingDatabaseScript
 	var data = (db.get_by_id(selected_building_id) if db != null else null)
@@ -157,9 +163,31 @@ func _update_preview_at_cell(cell: Vector2i) -> void:
 	_update_preview_tint(cell)
 
 func _update_preview_tint(cell: Vector2i) -> void:
-	var ok: bool = (_grid as GridSystemScript).is_cell_free(cell)
+	var g := _grid as GridSystemScript
+	var ok: bool = (g.is_cell_free(cell) and g.has_adjacent_building(cell))
 	_preview.modulate = (preview_ok_tint if ok else preview_blocked_tint)
 	_preview.modulate.a = preview_alpha
+
+func place_building_at_cell(id: StringName, cell: Vector2i, play_feedback: bool = true) -> Node2D:
+	# Utility for scripted placement (eg. initial building). Does not pay cost.
+	if _grid == null:
+		return null
+	var grid := _grid as GridSystemScript
+	if grid == null:
+		return null
+	if not grid.is_cell_free(cell):
+		return null
+
+	var building: Node2D = _create_building_instance(id)
+	if not grid.occupy_cell(cell, building):
+		building.queue_free()
+		return null
+	(building as BuildingScript).set_cell_and_snap(cell, grid.cell_to_world_top_left(cell), grid.cell_size)
+	add_child(building)
+	if play_feedback:
+		(building as BuildingScript).play_place_feedback()
+	emit_signal("building_placed", building, cell, id)
+	return building
 
 func _play_invalid_placement_feedback() -> void:
 	# Small red flash to make the failure readable.
@@ -172,7 +200,7 @@ func _play_invalid_placement_feedback() -> void:
 
 func _format_missing_cost_message(cost: Dictionary) -> String:
 	if _resource_manager == null:
-		return "Achat impossible."
+		return "Purchase failed."
 	var parts: Array[String] = []
 	var keys := cost.keys()
 	keys.sort_custom(func(a, b): return str(a) < str(b))
@@ -186,5 +214,5 @@ func _format_missing_cost_message(cost: Dictionary) -> String:
 		if missing > 0:
 			parts.append("%d %s" % [missing, str(k)])
 	if parts.is_empty():
-		return "Achat impossible."
-	return "Manque: %s" % ", ".join(parts)
+		return "Purchase failed."
+	return "Missing: %s" % ", ".join(parts)

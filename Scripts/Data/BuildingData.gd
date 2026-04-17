@@ -18,8 +18,12 @@ class_name BuildingData
 # Storage (optional): increases max resource capacity when > 0
 @export var storage_capacity_bonus: int = 0
 
+# If true, free tiles in the 4-neighborhood never turn red from the spread rule.
+@export var blocks_adjacent_infection: bool = false
+
 # Placeholder visuals
 @export var color: Color = Color.WHITE
+@export var sprite: Texture2D
 
 func is_producer() -> bool:
 	return produces_resource != &"" and production_amount != 0 and production_interval_sec > 0.0

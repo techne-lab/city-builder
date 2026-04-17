@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Cozy flat sprite: Farm (64x64), transparent background -->
+  <!-- Shadow -->
+  <ellipse cx="32" cy="52" rx="19" ry="6" fill="#1b1b1b" opacity="0.16"/>
+
+  <!-- Field base -->
+  <rect x="12" y="28" width="40" height="22" rx="5" fill="#7db86a"/>
+  <rect x="12" y="28" width="40" height="22" rx="5" fill="#000" opacity="0.05"/>
+  <rect x="14" y="30" width="36" height="18" rx="4" fill="#8dca78"/>
+
+  <!-- Crop rows -->
+  <path d="M16 34 C22 33, 28 35, 34 34 C40 33, 46 35, 48 34" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <path d="M16 40 C22 39, 28 41, 34 40 C40 39, 46 41, 48 40" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <path d="M16 46 C22 45, 28 47, 34 46 C40 45, 46 47, 48 46" fill="none" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Small shed -->
+  <rect x="40" y="22" width="14" height="18" rx="3" fill="#c79b6a"/>
+  <rect x="41.5" y="24" width="11" height="14" rx="2.5" fill="#d6ad7a"/>
+  <path d="M38 24 L47 16 L56 24 L56 28 L38 28 Z" fill="#b56c5e"/>
+  <path d="M47 16 L56 24 L56 28 L47 28 Z" fill="#000" opacity="0.08"/>
+  <rect x="45" y="30" width="4" height="8" rx="1.5" fill="#8f5f3f"/>
+
+  <!-- Tiny fence hint -->
+  <path d="M13 29 V50 M18 29 V50 M23 29 V50" stroke="#f3d48a" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round"/>
+</svg>

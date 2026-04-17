@@ -1,37 +1,54 @@
-[gd_scene load_steps=2 format=3 uid="uid://c34hmf2iefu7p"]
+[gd_scene load_steps=3 format=3 uid="uid://c34hmf2iefu7p"]
 
 [ext_resource type="Script" path="res://Scripts/UI/HUD.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://cw465w66nwy6t" path="res://assets/ui/topbar.png" id="2_topbar"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
-[node name="TutorialPanel" type="PanelContainer" parent="."]
+[node name="Notifications" type="VBoxContainer" parent="."]
+offset_left = 10.0
+offset_top = 64.0
+offset_right = 420.0
+offset_bottom = 360.0
+theme_override_constants/separation = 8
+
+[node name="TutorialPanel" type="PanelContainer" parent="Notifications"]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.92)
-offset_left = 10.0
-offset_top = 12.0
-offset_right = 420.0
-offset_bottom = 150.0
+layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="TutorialRoot" type="HBoxContainer" parent="TutorialPanel"]
+[node name="TutorialRoot" type="HBoxContainer" parent="Notifications/TutorialPanel"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TutorialText" type="Label" parent="TutorialPanel/TutorialRoot"]
+[node name="TutorialText" type="Label" parent="Notifications/TutorialPanel/TutorialRoot"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "Tutoriel"
+text = "Tutorial"
 autowrap_mode = 3
 
-[node name="TutorialArrow" type="Label" parent="TutorialPanel/TutorialRoot"]
+[node name="TutorialArrow" type="Label" parent="Notifications/TutorialPanel/TutorialRoot"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 text = "➡"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ToastPanel" type="PanelContainer" parent="Notifications"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.85)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ToastLabel" type="Label" parent="Notifications/ToastPanel"]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="Victory" type="PanelContainer" parent="."]
 visible = false
@@ -46,16 +63,145 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "VICTORY!
-30 habitants atteints."
+Red spread contained."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="TopBar" type="NinePatchRect" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 56.0
+texture = ExtResource("2_topbar")
+patch_margin_left = 14
+patch_margin_top = 14
+patch_margin_right = 14
+patch_margin_bottom = 14
+
+[node name="TopBarContent" type="HBoxContainer" parent="TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = -14.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="BlockedTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BlockedLabel" type="Label" parent="TopBar/TopBarContent/BlockedTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Blocked: 0 (every 5s)"
+
+[node name="Spacer" type="Control" parent="TopBar/TopBarContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WoodTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="WoodIcon" type="TextureRect" parent="TopBar/TopBarContent/WoodTop"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WoodValue" type="Label" parent="TopBar/TopBarContent/WoodTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="WoodRate" type="Label" parent="TopBar/TopBarContent/WoodTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(+0.00/s)"
+
+[node name="FoodTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FoodIcon" type="TextureRect" parent="TopBar/TopBarContent/FoodTop"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FoodValue" type="Label" parent="TopBar/TopBarContent/FoodTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="FoodRate" type="Label" parent="TopBar/TopBarContent/FoodTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(+0.00/s)"
+
+[node name="GoldTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="GoldIcon" type="TextureRect" parent="TopBar/TopBarContent/GoldTop"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldValue" type="Label" parent="TopBar/TopBarContent/GoldTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="GoldRate" type="Label" parent="TopBar/TopBarContent/GoldTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(+0.00/s)"
+
+[node name="StoneTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StoneIcon" type="TextureRect" parent="TopBar/TopBarContent/StoneTop"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StoneValue" type="Label" parent="TopBar/TopBarContent/StoneTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="PopTop" type="HBoxContainer" parent="TopBar/TopBarContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PopIcon" type="TextureRect" parent="TopBar/TopBarContent/PopTop"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PopValue" type="Label" parent="TopBar/TopBarContent/PopTop"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 0"
 
 [node name="Margin" type="MarginContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -358.0
-offset_top = 10.0
+offset_top = 64.0
 offset_right = -8.0
 offset_bottom = 339.0
 grow_horizontal = 0
@@ -73,21 +219,25 @@ theme_override_constants/separation = 2
 
 [node name="WoodLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Wood: 0"
 
 [node name="FoodLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Food: 0"
 
 [node name="GoldLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Gold: 0"
 
 [node name="PopLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Pop: 0 / 0"
 
@@ -98,11 +248,13 @@ text = "Selected: (none)"
 
 [node name="RatesLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Rates: food +0.0/s, food -0.0/s, gold +0.0/s"
 
 [node name="FoodNetLabel" type="Label" parent="Margin/Panel/Root/Stats"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Food net: +0.00/s"
 
@@ -150,22 +302,31 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Storage"
 
+[node name="MineButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Mine"
+
+[node name="WallButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Wall"
+
+[node name="PurifyButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Purify (200g)"
+
+[node name="MiningButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Pickaxe"
+
 [node name="UpgradeButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 disabled = true
 text = "Upgrade"
-
-[node name="ToastPanel" type="PanelContainer" parent="."]
-unique_name_in_owner = true
-visible = false
-modulate = Color(1, 1, 1, 0.85)
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 360.0
-offset_bottom = 44.0
-
-[node name="ToastLabel" type="Label" parent="ToastPanel"]
-unique_name_in_owner = true
-layout_mode = 2

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Cozy flat sprite: House (64x64), transparent background -->
+  <!-- Shadow -->
+  <ellipse cx="32" cy="52" rx="18" ry="6" fill="#1b1b1b" opacity="0.18"/>
+
+  <!-- Walls -->
+  <rect x="18" y="28" width="28" height="24" rx="4" fill="#c79b6a"/>
+  <rect x="18" y="28" width="28" height="24" rx="4" fill="#000" opacity="0.06"/>
+  <rect x="20" y="30" width="24" height="20" rx="3" fill="#d6ad7a"/>
+
+  <!-- Roof -->
+  <path d="M16 30 L32 18 L48 30 L48 34 L16 34 Z" fill="#c46a6a"/>
+  <path d="M32 18 L48 30 L48 34 L32 34 Z" fill="#000" opacity="0.08"/>
+  <path d="M16 30 L32 18 L48 30" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Chimney -->
+  <rect x="40" y="20" width="6" height="10" rx="2" fill="#9a6a55"/>
+  <rect x="41" y="21" width="4" height="8" rx="1.5" fill="#ad7a62"/>
+
+  <!-- Door -->
+  <rect x="28" y="36" width="8" height="16" rx="2" fill="#8f5f3f"/>
+  <circle cx="34" cy="44" r="1.2" fill="#f3d48a"/>
+
+  <!-- Window -->
+  <rect x="21" y="36" width="6" height="6" rx="1.5" fill="#8cc3d8"/>
+  <path d="M21 39 H27 M24 36 V42" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1"/>
+
+  <!-- Base trim -->
+  <rect x="18" y="50" width="28" height="2.5" rx="1.2" fill="#000" opacity="0.10"/>
+</svg>

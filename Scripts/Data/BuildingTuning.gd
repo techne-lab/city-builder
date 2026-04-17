@@ -12,5 +12,7 @@ class_name BuildingTuning
 @export var population_capacity: int = 0
 @export var storage_capacity_bonus: int = 0
 
+@export var blocks_adjacent_infection: bool = false
+
 @export var color: Color = Color.WHITE
 

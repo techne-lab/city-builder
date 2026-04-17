@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Button icon: Sawmill (32x32), transparent background -->
+  <ellipse cx="16" cy="26.5" rx="11" ry="3" fill="#1b1b1b" opacity="0.10"/>
+  <rect x="7" y="14" width="14" height="12" rx="3" fill="#d6ad7a"/>
+  <path d="M6 15 L14 10 L22 15 L22 17 L6 17 Z" fill="#b56c5e"/>
+  <circle cx="12" cy="20" r="3.2" fill="#c8d0d6"/>
+  <rect x="20" y="18" width="7" height="3.5" rx="1.8" fill="#b87a4f"/>
+  <rect x="19" y="21" width="8" height="3.5" rx="1.8" fill="#a36a44"/>
+</svg>

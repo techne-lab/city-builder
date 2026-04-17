@@ -8,10 +8,12 @@ class_name GameBalance
 @export var base_wood_cap: int = 100
 @export var base_food_cap: int = 100
 @export var base_gold_cap: int = 100
+@export var base_stone_cap: int = 100
 
 @export var starting_food: int = 20
 @export var starting_gold: int = 0
 @export var starting_wood: int = 20
+@export var starting_stone: int = 0
 @export var starting_population: int = 2
 
 @export var pop_tick_interval_sec: float = 1.0

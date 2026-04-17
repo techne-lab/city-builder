@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Resource icon: wood (32x32), transparent background -->
+  <ellipse cx="16" cy="26" rx="11" ry="3.5" fill="#1b1b1b" opacity="0.12"/>
+
+  <rect x="6" y="14" width="18" height="6" rx="3" fill="#b87a4f"/>
+  <rect x="8" y="12" width="18" height="6" rx="3" fill="#c98a5a"/>
+  <rect x="10" y="18" width="18" height="6" rx="3" fill="#a36a44"/>
+
+  <circle cx="24" cy="15" r="2.2" fill="#8f5f3f" opacity="0.55"/>
+  <circle cx="26" cy="21" r="2.2" fill="#8f5f3f" opacity="0.55"/>
+  <circle cx="22" cy="21" r="1.4" fill="#8f5f3f" opacity="0.40"/>
+</svg>

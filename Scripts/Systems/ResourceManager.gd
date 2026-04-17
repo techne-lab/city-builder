@@ -10,17 +10,20 @@ signal caps_changed(caps: Dictionary)
 const WOOD: StringName = &"wood"
 const FOOD: StringName = &"food"
 const GOLD: StringName = &"gold"
+const STONE: StringName = &"stone"
 
 var _res: Dictionary = {
 	WOOD: 0,
 	FOOD: 0,
 	GOLD: 0,
+	STONE: 0,
 }
 
 var _caps: Dictionary = {
 	WOOD: 100,
 	FOOD: 100,
 	GOLD: 100,
+	STONE: 100,
 }
 
 func _ready() -> void:

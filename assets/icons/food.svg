@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Resource icon: food (32x32), transparent background -->
+  <ellipse cx="16" cy="26" rx="10.5" ry="3.5" fill="#1b1b1b" opacity="0.10"/>
+
+  <!-- Bundle of crops -->
+  <path d="M11 24 C10 18, 12 12, 16 10 C20 12, 22 18, 21 24 Z" fill="#7db86a"/>
+  <path d="M13 24 C12 19, 13 14, 16 12 C19 14, 20 19, 19 24 Z" fill="#8dca78"/>
+  <path d="M16 12 L16 24" stroke="#5ea95c" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
+
+  <!-- Tie -->
+  <rect x="13" y="21.5" width="6" height="4" rx="2" fill="#c98a5a"/>
+  <rect x="13.8" y="22.3" width="4.4" height="2.4" rx="1.2" fill="#d6ad7a"/>
+</svg>
