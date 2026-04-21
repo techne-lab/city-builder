@@ -18,7 +18,7 @@ var _building_system: Node2D
 var _victory: bool = false
 var _defeat: bool = false
 var _victory_population: int = 30
-var _base_caps := {&"wood": 100, &"food": 100, &"gold": 100, &"stone": 100}
+var _base_caps := {&"wood": 100, &"food": 100, &"gold": 100, &"stone": 100, &"light": 100}
 var _resource_manager: Node
 var _population_manager: Node
 var _containment_timer: Timer
@@ -149,7 +149,8 @@ func _recalculate_derived_from_buildings() -> void:
 		var food_cap: int = int(_base_caps.get(&"food", 100)) + total_storage_bonus
 		var gold_cap: int = int(_base_caps.get(&"gold", 100)) + total_storage_bonus
 		var stone_cap: int = int(_base_caps.get(&"stone", 100)) + total_storage_bonus
-		_resource_manager.set_caps({&"wood": wood_cap, &"food": food_cap, &"gold": gold_cap, &"stone": stone_cap})
+		var light_cap: int = int(_base_caps.get(&"light", 100)) + total_storage_bonus
+		_resource_manager.set_caps({&"wood": wood_cap, &"food": food_cap, &"gold": gold_cap, &"stone": stone_cap, &"light": light_cap})
 
 	_assign_workers_from_population()
 
@@ -173,6 +174,11 @@ func _assign_workers_from_population(available_workers: int = -1) -> void:
 			# Non-producers don't need workers.
 			b.worker_assigned = true
 
+	for b in producers:
+		var d := b.building_data as BuildingDataScript
+		if d != null and not d.production_requires_worker:
+			b.worker_assigned = true
+
 	# Stable assignment so the same buildings stay active.
 	producers.sort_custom(func(a: BuildingScript, c: BuildingScript) -> bool:
 		var pa := _producer_priority(a)
@@ -182,9 +188,16 @@ func _assign_workers_from_population(available_workers: int = -1) -> void:
 		return a.get_instance_id() < c.get_instance_id()
 	)
 
-	var active := mini(available_workers, producers.size())
-	for i in range(producers.size()):
-		producers[i].worker_assigned = i < active
+	# Assign workers only to producers that require them.
+	var needing: Array[BuildingScript] = []
+	for b in producers:
+		var d := b.building_data as BuildingDataScript
+		if d != null and d.production_requires_worker:
+			needing.append(b)
+
+	var active := mini(available_workers, needing.size())
+	for i in range(needing.size()):
+		needing[i].worker_assigned = i < active
 
 func _producer_priority(b: BuildingScript) -> int:
 	# Lower = higher priority. Game design rule: sawmills first, then farms.
@@ -230,6 +243,7 @@ func _apply_balance_if_any() -> void:
 		&"food": maxi(b.base_food_cap, 0),
 		&"gold": maxi(b.base_gold_cap, 0),
 		&"stone": maxi(b.base_stone_cap, 0),
+		&"light": 100,
 	}
 
 	# Apply pop simulation tuning
@@ -268,6 +282,7 @@ func _apply_balance_if_any() -> void:
 		_resource_manager.set_amount(&"food", maxi(b.starting_food, 0))
 		_resource_manager.set_amount(&"gold", maxi(b.starting_gold, 0))
 		_resource_manager.set_amount(&"stone", maxi(b.starting_stone, 0))
+		_resource_manager.set_amount(&"light", 0)
 
 	if _population_manager != null:
 		_population_manager.set_population(maxi(b.starting_population, 0))

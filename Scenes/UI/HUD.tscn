@@ -213,6 +213,39 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
 
+[node name="ContextOverlay" type="MarginContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -64.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="ContextPanel" type="PanelContainer" parent="ContextOverlay"]
+layout_mode = 2
+
+[node name="ContextButtons" type="HBoxContainer" parent="ContextOverlay/ContextPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="UpgradeButton" type="Button" parent="ContextOverlay/ContextPanel/ContextButtons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+disabled = true
+text = "Upgrade"
+
+[node name="MiningButton" type="Button" parent="ContextOverlay/ContextPanel/ContextButtons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Pickaxe"
+
 [node name="Margin" type="MarginContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
@@ -293,12 +326,6 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="SelectCellButton" type="Button" parent="Margin/Panel/Root/Buttons"]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-text = "Select"
-
 [node name="HouseButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -324,6 +351,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Mine"
 
+[node name="FountainButton" type="Button" parent="Margin/Panel/Root/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fountain"
+
 [node name="WallButton" type="Button" parent="Margin/Panel/Root/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -333,17 +365,4 @@ text = "Wall"
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
-text = "Purify (200g)"
-
-[node name="MiningButton" type="Button" parent="Margin/Panel/Root/Buttons"]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-text = "Pickaxe"
-
-[node name="UpgradeButton" type="Button" parent="Margin/Panel/Root/Buttons"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-disabled = true
-text = "Upgrade"
+text = "Purify (9 light)"

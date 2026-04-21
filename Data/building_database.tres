@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BuildingDatabase" load_steps=12 format=3 uid="uid://nnodtw4ur5ut"]
+[gd_resource type="Resource" script_class="BuildingDatabase" load_steps=13 format=3 uid="uid://nnodtw4ur5ut"]
 
 [ext_resource type="Script" path="res://Scripts/Data/BuildingDatabase.gd" id="1_db"]
 [ext_resource type="Script" path="res://Scripts/Data/BuildingData.gd" id="2_data"]
@@ -15,6 +15,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 2
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.415686, 0.662745, 1, 1)
 
 [sub_resource type="Resource" id="BuildingData_house_2"]
@@ -29,6 +30,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 2
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.36, 0.56, 0.92, 1)
 
 [sub_resource type="Resource" id="BuildingData_farm"]
@@ -43,6 +45,7 @@ production_amount = 1
 production_interval_sec = 2.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.980392, 0.823529, 0.364706, 1)
 
 [sub_resource type="Resource" id="BuildingData_farm_2"]
@@ -57,6 +60,7 @@ production_amount = 1
 production_interval_sec = 2.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.92, 0.75, 0.26, 1)
 
 [sub_resource type="Resource" id="BuildingData_sawmill"]
@@ -72,6 +76,7 @@ production_amount = 2
 production_interval_sec = 3.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.717647, 0.560784, 0.392157, 1)
 
 [sub_resource type="Resource" id="BuildingData_sawmill_2"]
@@ -86,6 +91,7 @@ production_amount = 2
 production_interval_sec = 3.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.64, 0.5, 0.34, 1)
 
 [sub_resource type="Resource" id="BuildingData_storage"]
@@ -101,6 +107,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
 storage_capacity_bonus = 15
+blocks_adjacent_infection = false
 color = Color(0.7, 0.7, 0.75, 1)
 
 [sub_resource type="Resource" id="BuildingData_mine"]
@@ -116,6 +123,7 @@ production_amount = 1
 production_interval_sec = 10.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.55, 0.58, 0.62, 1)
 
 [sub_resource type="Resource" id="BuildingData_wall"]
@@ -131,8 +139,24 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.62, 0.6, 0.58, 1)
+
+[sub_resource type="Resource" id="BuildingData_fountain"]
+script = ExtResource("2_data")
+id = &"fountain"
+display_name = "Fountain"
+cost = {
+"gold": 100
+}
+produces_resource = &"light"
+production_amount = 1
+production_interval_sec = 6.0
+population_capacity = 0
+storage_capacity_bonus = 0
+blocks_adjacent_infection = false
+color = Color(0.92, 0.92, 1, 1)
 
 [resource]
 script = ExtResource("1_db")
-buildings = Array[ExtResource("2_data")]([SubResource("BuildingData_house"), SubResource("BuildingData_house_2"), SubResource("BuildingData_farm"), SubResource("BuildingData_farm_2"), SubResource("BuildingData_sawmill"), SubResource("BuildingData_sawmill_2"), SubResource("BuildingData_storage"), SubResource("BuildingData_mine"), SubResource("BuildingData_wall")])
+buildings = Array[ExtResource("2_data")]([SubResource("BuildingData_house"), SubResource("BuildingData_house_2"), SubResource("BuildingData_farm"), SubResource("BuildingData_farm_2"), SubResource("BuildingData_sawmill"), SubResource("BuildingData_sawmill_2"), SubResource("BuildingData_storage"), SubResource("BuildingData_mine"), SubResource("BuildingData_wall"), SubResource("BuildingData_fountain")])

@@ -23,6 +23,9 @@ var _resource_manager: Node
 var _place_tween: Tween
 var _sprite: Sprite2D
 
+var _is_upgraded: bool = false
+var _production_amount_multiplier: int = 1
+
 var _corrupted: bool = false
 var corrupted: bool:
 	get:
@@ -87,6 +90,8 @@ func _sync_sprite_scale() -> void:
 func apply_building_data(id: StringName, data: Resource) -> void:
 	building_id = id
 	building_data = data
+	_is_upgraded = false
+	_production_amount_multiplier = 1
 
 	var d := building_data as BuildingDataScript
 	if d != null:
@@ -101,15 +106,24 @@ func apply_building_data(id: StringName, data: Resource) -> void:
 		_apply_upgrade_visuals()
 
 func _apply_upgrade_visuals() -> void:
-	# Convention: *_2 are upgraded versions.
-	var upgraded := String(building_id).ends_with("_2")
-	if upgraded:
+	if _is_upgraded:
 		outline_color = upgraded_outline_color
 		outline_width = upgraded_outline_width
 	else:
 		outline_color = Color(0, 0, 0, 0.35)
 		outline_width = 2.0
 	queue_redraw()
+
+func is_upgraded() -> bool:
+	return _is_upgraded
+
+func apply_production_upgrade() -> void:
+	# Single upgrade step for production buildings.
+	if _is_upgraded:
+		return
+	_is_upgraded = true
+	_production_amount_multiplier = 2
+	_apply_upgrade_visuals()
 
 func set_cell_and_snap(new_cell: Vector2i, top_left_world: Vector2, new_cell_size: int) -> void:
 	cell = new_cell
@@ -151,13 +165,13 @@ func _on_production_timeout() -> void:
 		return
 	if not data.is_producer():
 		return
-	if not worker_assigned:
+	if data.production_requires_worker and not worker_assigned:
 		return
 	if _resource_manager == null:
 		_resource_manager = get_node_or_null("/root/ResourceManager")
 	if _resource_manager == null:
 		return
-	_resource_manager.add(data.produces_resource, data.production_amount)
+	_resource_manager.add(data.produces_resource, data.production_amount * _production_amount_multiplier)
 
 func play_place_feedback() -> void:
 	# Minimal "pop" animation to confirm placement.
@@ -178,6 +192,12 @@ func _draw() -> void:
 	if _sprite == null or _sprite.texture == null:
 		draw_rect(Rect2(Vector2.ZERO, px_size), fill_color, true)
 	draw_rect(Rect2(Vector2.ZERO, px_size), outline_color, false, outline_width)
+
+	# Extra upgrade contour to make upgrades obvious at a glance.
+	if _is_upgraded:
+		var pad := 2.0
+		var upgrade_rect := Rect2(Vector2(-pad, -pad), px_size + Vector2(pad, pad) * 2.0)
+		draw_rect(upgrade_rect, upgraded_outline_color, false, maxf(outline_width + 1.5, upgraded_outline_width))
 
 	if corrupted:
 		draw_rect(Rect2(Vector2.ZERO, px_size), Color(1.0, 0.15, 0.15, 0.25), true)

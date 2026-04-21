@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GameBalance" load_steps=12 format=3 uid="uid://dk3i03blwhirb"]
+[gd_resource type="Resource" script_class="GameBalance" load_steps=13 format=3 uid="uid://dk3i03blwhirb"]
 
 [ext_resource type="Script" path="res://Scripts/Data/GameBalance.gd" id="1_balance"]
 [ext_resource type="Script" path="res://Scripts/Data/BuildingTuning.gd" id="2_tuning"]
@@ -15,6 +15,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 5
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.415686, 0.662745, 1, 1)
 
 [sub_resource type="Resource" id="Tuning_house_2"]
@@ -29,6 +30,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 8
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.36, 0.56, 0.92, 1)
 
 [sub_resource type="Resource" id="Tuning_farm"]
@@ -43,6 +45,7 @@ production_amount = 3
 production_interval_sec = 4.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.980392, 0.823529, 0.364706, 1)
 
 [sub_resource type="Resource" id="Tuning_farm_2"]
@@ -57,6 +60,7 @@ production_amount = 5
 production_interval_sec = 4.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.92, 0.75, 0.26, 1)
 
 [sub_resource type="Resource" id="Tuning_sawmill"]
@@ -71,6 +75,7 @@ production_amount = 2
 production_interval_sec = 4.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.717647, 0.560784, 0.392157, 1)
 
 [sub_resource type="Resource" id="Tuning_sawmill_2"]
@@ -85,6 +90,7 @@ production_amount = 3
 production_interval_sec = 4.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.64, 0.5, 0.34, 1)
 
 [sub_resource type="Resource" id="Tuning_storage"]
@@ -99,6 +105,7 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
 storage_capacity_bonus = 15
+blocks_adjacent_infection = false
 color = Color(0.7, 0.7, 0.75, 1)
 
 [sub_resource type="Resource" id="Tuning_mine"]
@@ -113,6 +120,7 @@ production_amount = 1
 production_interval_sec = 10.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.55, 0.58, 0.62, 1)
 
 [sub_resource type="Resource" id="Tuning_wall"]
@@ -127,7 +135,22 @@ production_amount = 0
 production_interval_sec = 0.0
 population_capacity = 0
 storage_capacity_bonus = 0
+blocks_adjacent_infection = false
 color = Color(0.62, 0.6, 0.58, 1)
+
+[sub_resource type="Resource" id="Tuning_fountain"]
+script = ExtResource("2_tuning")
+id = &"fountain"
+cost = {
+"gold": 100
+}
+produces_resource = &"light"
+production_amount = 1
+production_interval_sec = 6.0
+population_capacity = 0
+storage_capacity_bonus = 0
+blocks_adjacent_infection = false
+color = Color(0.92, 0.92, 1, 1)
 
 [resource]
 script = ExtResource("1_balance")
@@ -135,9 +158,11 @@ victory_population = 30
 base_wood_cap = 15
 base_food_cap = 15
 base_gold_cap = 15
+base_stone_cap = 100
 starting_food = 10
 starting_gold = 10
 starting_wood = 20
+starting_stone = 0
 starting_population = 2
 pop_tick_interval_sec = 1.0
 food_consumption_interval_sec = 6.0
@@ -145,4 +170,4 @@ gold_income_interval_sec = 5.0
 starvation_decrease_per_tick = 1
 growth_per_tick = 1
 food_cost_per_new_person = 1
-buildings = Array[ExtResource("2_tuning")]([SubResource("Tuning_house"), SubResource("Tuning_house_2"), SubResource("Tuning_farm"), SubResource("Tuning_farm_2"), SubResource("Tuning_sawmill"), SubResource("Tuning_sawmill_2"), SubResource("Tuning_storage"), SubResource("Tuning_mine"), SubResource("Tuning_wall")])
+buildings = Array[ExtResource("2_tuning")]([SubResource("Tuning_house"), SubResource("Tuning_house_2"), SubResource("Tuning_farm"), SubResource("Tuning_farm_2"), SubResource("Tuning_sawmill"), SubResource("Tuning_sawmill_2"), SubResource("Tuning_storage"), SubResource("Tuning_mine"), SubResource("Tuning_wall"), SubResource("Tuning_fountain")])

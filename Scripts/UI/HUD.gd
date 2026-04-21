@@ -66,7 +66,7 @@ var _mining_mode: bool = false
 var _selected_cell: Vector2i = Vector2i(-999, -999)
 var _selected_placed_building: BuildingScript = null
 
-const PURIFY_COST_GOLD: int = 200
+const PURIFY_COST_LIGHT: int = 9
 const MINING_YIELD_STONE: int = 1
 
 func _ready() -> void:
@@ -108,17 +108,18 @@ func _ready() -> void:
 			_game_manager.defeat_reached.connect(_on_defeat)
 
 	# Buttons
-	%SelectCellButton.toggled.connect(_set_cell_select_mode)
 	if purify_button != null:
 		purify_button.toggled.connect(_set_purify_mode)
 	if mining_button != null:
-		mining_button.toggled.connect(_set_mining_mode)
+		mining_button.pressed.connect(_mine_selected_stone_now)
+		mining_button.visible = false
 	upgrade_button.pressed.connect(_try_upgrade_selected_building)
 	%HouseButton.pressed.connect(func(): _select(&"house"))
 	%FarmButton.pressed.connect(func(): _select(&"farm"))
 	%LumberMillButton.pressed.connect(func(): _select(&"sawmill"))
 	%StorageButton.pressed.connect(func(): _select(&"storage"))
 	%MineButton.pressed.connect(func(): _select(&"mine"))
+	%FountainButton.pressed.connect(func(): _select(&"fountain"))
 	%WallButton.pressed.connect(func(): _select(&"wall"))
 
 	_apply_ui_skin()
@@ -141,6 +142,7 @@ func _ready() -> void:
 	_tutorial_timer.timeout.connect(_update_tutorial)
 	_update_tutorial()
 	_refresh_overlay_minimal()
+	_refresh_context_overlay()
 
 func _refresh_overlay_minimal() -> void:
 	# Overlay should only show essential info (hide empty/"none" placeholders).
@@ -152,6 +154,40 @@ func _refresh_overlay_minimal() -> void:
 		details_label.visible = dt != "" and dt != "Details: -"
 	if cell_details_label != null:
 		cell_details_label.visible = cell_details_label.text.strip_edges() != ""
+
+func _refresh_context_overlay() -> void:
+	# Context actions live in the bottom overlay:
+	# - Upgrade: when a placed building is selected (handled by _refresh_upgrade_ui).
+	# - Pickaxe: when a stone tile is selected in cell select mode and can be mined.
+	if mining_button != null:
+		var should_show := false
+		if _cell_select_mode and _grid != null and _selected_cell != Vector2i(-999, -999):
+			var grid := _grid as GridSystemScript
+			if grid != null:
+				should_show = grid.is_cell_stone(_selected_cell) and grid.has_adjacent_building(_selected_cell)
+		mining_button.visible = should_show
+
+func _mine_selected_stone_now() -> void:
+	if _grid == null:
+		return
+	if _resource_manager == null:
+		_resource_manager = get_node_or_null("/root/ResourceManager")
+	var grid := _grid as GridSystemScript
+	if grid == null:
+		return
+	if _selected_cell == Vector2i(-999, -999):
+		return
+	# Same rule as mining mode: only stone adjacent to player's buildings.
+	if not grid.is_cell_stone(_selected_cell):
+		return
+	if not grid.has_adjacent_building(_selected_cell):
+		return
+
+	if grid.mine_stone(_selected_cell):
+		if _resource_manager != null:
+			_resource_manager.add(&"stone", MINING_YIELD_STONE)
+		_show_toast("Stone gathered (+1).")
+	_refresh_context_overlay()
 
 func _select(id: StringName) -> void:
 	if _building_system == null:
@@ -166,10 +202,10 @@ func _select(id: StringName) -> void:
 		_set_mining_mode(false)
 	# Selecting a building turns off cell select mode.
 	if _cell_select_mode:
-		%SelectCellButton.button_pressed = false
 		_set_cell_select_mode(false)
 	_clear_selected_placed_building()
 	(_building_system as BuildingSystemScript).select_building(id)
+	_refresh_context_overlay()
 
 func _on_resources_changed(res: Dictionary) -> void:
 	var w := int(res.get(&"wood", 0))
@@ -258,12 +294,12 @@ func _apply_ui_skin() -> void:
 	var mill_btn: Button = %LumberMillButton
 	var storage_btn: Button = %StorageButton
 	var mine_btn: Button = %MineButton
+	var fountain_btn: Button = %FountainButton
 	var wall_btn: Button = %WallButton
-	var select_btn: Button = %SelectCellButton
 	var purify_btn: Button = purify_button
 	var mining_btn: Button = mining_button
 
-	for b in [house_btn, farm_btn, mill_btn, storage_btn, mine_btn, wall_btn, purify_btn, mining_btn, select_btn, upgrade_button]:
+	for b in [house_btn, farm_btn, mill_btn, storage_btn, mine_btn, fountain_btn, wall_btn, purify_btn, mining_btn, upgrade_button]:
 		if b == null:
 			continue
 		b.add_theme_stylebox_override("normal", normal)
@@ -351,10 +387,12 @@ func _set_cell_select_mode(enabled: bool) -> void:
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 
 func _set_purify_mode(enabled: bool) -> void:
 	_purify_mode = enabled
@@ -363,7 +401,6 @@ func _set_purify_mode(enabled: bool) -> void:
 	if enabled:
 		# Mutually exclusive with cell select mode.
 		if _cell_select_mode:
-			%SelectCellButton.button_pressed = false
 			_set_cell_select_mode(false)
 		# Mutually exclusive with mining mode.
 		if _mining_mode and mining_button != null:
@@ -373,23 +410,24 @@ func _set_purify_mode(enabled: bool) -> void:
 		if _building_system != null:
 			(_building_system as BuildingSystemScript).cancel_selection()
 		selected_label.text = "Selected: Purify"
-		details_label.text = "Details:\n- Click a tile to purify (3x3).\n- Cost: 200 gold."
+		details_label.text = "Details:\n- Click a tile to purify (3x3).\n- Cost: 9 light."
 		cell_details_label.text = ""
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 
 func _set_mining_mode(enabled: bool) -> void:
 	_mining_mode = enabled
 	if enabled:
 		# Mutually exclusive with cell select mode.
 		if _cell_select_mode:
-			%SelectCellButton.button_pressed = false
 			_set_cell_select_mode(false)
 		# Mutually exclusive with purify mode.
 		if _purify_mode and purify_button != null:
@@ -405,20 +443,25 @@ func _set_mining_mode(enabled: bool) -> void:
 		upgrade_button.disabled = true
 		_clear_selected_placed_building()
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 	else:
 		_selected_cell = Vector2i(-999, -999)
 		cell_details_label.text = ""
 		_refresh_overlay_minimal()
+		_refresh_context_overlay()
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Right click: clear any selection, but don't consume input
+	# so camera panning (also right click) still works.
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		_clear_all_selection()
+		return
+
 	if _purify_mode:
 		_try_purify_input(event)
 		return
 	if _mining_mode:
 		_try_mining_input(event)
-		return
-	if not _cell_select_mode:
-		# When not in selection mode, clicking placed buildings should not show info.
 		return
 	if _grid == null:
 		return
@@ -429,6 +472,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		# If not currently selecting cells, a click on the grid enters cell select mode
+		# when we are NOT in placement mode.
+		if not _cell_select_mode:
+			var bs := (_building_system as BuildingSystemScript if _building_system != null else null)
+			var in_placement_mode := (bs != null and bs.selected_building_id != &"")
+			if not in_placement_mode:
+				_set_cell_select_mode(true)
+			else:
+				return
+
 		var grid := _grid as GridSystemScript
 		if grid == null:
 			return
@@ -436,13 +489,30 @@ func _unhandled_input(event: InputEvent) -> void:
 		_selected_cell = cell
 		var props: Dictionary = grid.get_cell_properties(cell)
 		_show_selected_cell_props(props)
+		_refresh_context_overlay()
 
-		# If the selected cell contains a building, switch to building selection (upgrade, details, etc.).
-		var payload: Variant = grid.get_occupied_payload(cell)
-		if payload is BuildingScript:
-			%SelectCellButton.button_pressed = false
-			_set_cell_select_mode(false)
-			_select_placed_building(payload as BuildingScript)
+func _clear_all_selection() -> void:
+	# Cancel placement selection (if any), clear inspected building, clear cell selection,
+	# and turn off modal tools.
+	if _building_system != null:
+		(_building_system as BuildingSystemScript).cancel_selection()
+
+	if _purify_mode and purify_button != null:
+		purify_button.button_pressed = false
+	_purify_mode = false
+	if _mining_mode and mining_button != null:
+		# Mining is now a context action, but keep state consistent if it was ever enabled.
+		mining_button.button_pressed = false
+	_mining_mode = false
+
+	if _cell_select_mode:
+		_set_cell_select_mode(false)
+
+	_selected_cell = Vector2i(-999, -999)
+	cell_details_label.text = ""
+	_clear_selected_placed_building()
+	_refresh_overlay_minimal()
+	_refresh_context_overlay()
 
 func _try_select_placed_building_input(event: InputEvent) -> void:
 	if _grid == null or _building_system == null:
@@ -481,12 +551,12 @@ func _try_purify_input(event: InputEvent) -> void:
 	if _resource_manager == null:
 		return
 
-	var cost := {&"gold": PURIFY_COST_GOLD}
+	var cost := {&"light": PURIFY_COST_LIGHT}
 	if not _resource_manager.can_afford(cost):
-		_show_toast("Not enough gold (need 200).")
+		_show_toast("Not enough light (need 9).")
 		return
 	if not _resource_manager.try_spend(cost):
-		_show_toast("Not enough gold (need 200).")
+		_show_toast("Not enough light (need 9).")
 		return
 
 	var grid := _grid as GridSystemScript
@@ -558,15 +628,11 @@ func _format_selected_building_details_with_upgrade_cost(id: StringName, data: B
 	var lines: Array[String] = []
 	lines.append("Details:")
 
-	# If an upgrade exists, show upgrade cost instead of initial build cost.
-	var upgrade_id := _get_upgrade_id_if_any(id)
-	if upgrade_id != &"":
-		var db := building_db as BuildingDatabaseScript
-		var up := (db.get_by_id(upgrade_id) if db != null else null) as BuildingDataScript
-		var up_cost: Dictionary = (up.cost if up != null else {})
+	lines.append("- cost: %s" % _format_cost(data.cost))
+
+	var up_cost := _get_upgrade_cost_if_any(id, data)
+	if up_cost.size() > 0:
 		lines.append("- upgrade cost: %s" % _format_cost(up_cost))
-	else:
-		lines.append("- cost: %s" % _format_cost(data.cost))
 
 	# Production
 	if data.produces_resource != &"" and data.production_amount != 0 and data.production_interval_sec > 0.0:
@@ -582,6 +648,26 @@ func _format_selected_building_details_with_upgrade_cost(id: StringName, data: B
 
 	return "\n".join(lines)
 
+func _get_upgrade_cost_if_any(id: StringName, data: BuildingDataScript) -> Dictionary:
+	if _selected_placed_building == null:
+		return {}
+	# Only production buildings are upgradable; mine and fountain are not.
+	if id == &"mine" or id == &"fountain":
+		return {}
+	if not data.is_producer():
+		return {}
+	if (_selected_placed_building as BuildingScript).is_upgraded():
+		return {}
+
+	var out: Dictionary = {}
+	for k in data.cost.keys():
+		var res_name: StringName = StringName(str(k))
+		var base := int(data.cost.get(k, 0))
+		if base <= 0:
+			continue
+		out[res_name] = int(ceili(float(base) * 1.5))
+	return out
+
 func _clear_selected_placed_building() -> void:
 	_selected_placed_building = null
 	upgrade_button.visible = false
@@ -593,6 +679,7 @@ func _clear_selected_placed_building() -> void:
 	if cell_details_label != null:
 		cell_details_label.text = ""
 	_refresh_overlay_minimal()
+	_refresh_context_overlay()
 
 func _refresh_upgrade_ui() -> void:
 	if upgrade_button == null:
@@ -602,8 +689,11 @@ func _refresh_upgrade_ui() -> void:
 		upgrade_button.disabled = true
 		return
 	var from_id := _selected_placed_building.building_id
-	var to_id := _get_upgrade_id_if_any(from_id)
-	if to_id == &"":
+	if from_id == &"mine" or from_id == &"fountain":
+		upgrade_button.visible = false
+		upgrade_button.disabled = true
+		return
+	if (_selected_placed_building as BuildingScript).is_upgraded():
 		upgrade_button.visible = false
 		upgrade_button.disabled = true
 		return
@@ -611,39 +701,31 @@ func _refresh_upgrade_ui() -> void:
 	upgrade_button.visible = true
 
 	var db := building_db as BuildingDatabaseScript
-	var to_data := (db.get_by_id(to_id) if db != null else null) as BuildingDataScript
-	if to_data == null:
+	var data := (db.get_by_id(from_id) if db != null else null) as BuildingDataScript
+	if data == null or not data.is_producer():
 		upgrade_button.disabled = true
 		return
 
-	var cost: Dictionary = to_data.cost
+	var cost: Dictionary = _get_upgrade_cost_if_any(from_id, data)
 	var can: bool = (_resource_manager.can_afford(cost) if _resource_manager != null else false)
 	upgrade_button.disabled = not can
-
-func _get_upgrade_id_if_any(from_id: StringName) -> StringName:
-	# Convention: base_id -> base_id_2
-	if String(from_id).ends_with("_2"):
-		return &""
-	var candidate := StringName("%s_2" % String(from_id))
-	var db := building_db as BuildingDatabaseScript
-	if db == null:
-		return &""
-	return (candidate if db.get_by_id(candidate) != null else &"")
+	_refresh_context_overlay()
 
 func _try_upgrade_selected_building() -> void:
 	if _selected_placed_building == null:
 		return
 	var from_id := _selected_placed_building.building_id
-	var to_id := _get_upgrade_id_if_any(from_id)
-	if to_id == &"":
+	if from_id == &"mine" or from_id == &"fountain":
 		return
 
 	var db := building_db as BuildingDatabaseScript
-	var to_data := (db.get_by_id(to_id) if db != null else null) as BuildingDataScript
-	if to_data == null:
+	var data := (db.get_by_id(from_id) if db != null else null) as BuildingDataScript
+	if data == null or not data.is_producer():
+		return
+	if (_selected_placed_building as BuildingScript).is_upgraded():
 		return
 
-	var cost: Dictionary = to_data.cost
+	var cost: Dictionary = _get_upgrade_cost_if_any(from_id, data)
 	if _resource_manager == null:
 		_resource_manager = get_node_or_null("/root/ResourceManager")
 	if _resource_manager == null:
@@ -655,7 +737,7 @@ func _try_upgrade_selected_building() -> void:
 		_refresh_upgrade_ui()
 		return
 
-	_selected_placed_building.apply_building_data(to_id, to_data)
+	_selected_placed_building.apply_production_upgrade()
 
 	# Recompute derived stats and worker assignment after changes.
 	if _game_manager != null and _game_manager.has_method("on_buildings_changed"):

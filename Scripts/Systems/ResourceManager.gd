@@ -11,12 +11,14 @@ const WOOD: StringName = &"wood"
 const FOOD: StringName = &"food"
 const GOLD: StringName = &"gold"
 const STONE: StringName = &"stone"
+const LIGHT: StringName = &"light"
 
 var _res: Dictionary = {
 	WOOD: 0,
 	FOOD: 0,
 	GOLD: 0,
 	STONE: 0,
+	LIGHT: 0,
 }
 
 var _caps: Dictionary = {
@@ -24,6 +26,7 @@ var _caps: Dictionary = {
 	FOOD: 100,
 	GOLD: 100,
 	STONE: 100,
+	LIGHT: 100,
 }
 
 func _ready() -> void:

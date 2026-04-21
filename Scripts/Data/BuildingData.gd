@@ -11,6 +11,7 @@ class_name BuildingData
 @export var produces_resource: StringName = &""
 @export var production_amount: int = 0
 @export var production_interval_sec: float = 0.0
+@export var production_requires_worker: bool = true
 
 # Population (optional)
 @export var population_capacity: int = 0
